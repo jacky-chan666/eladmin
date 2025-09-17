@@ -129,4 +129,12 @@ public interface UserService {
      * @param pwd 密码
      */
     void resetPwd(Set<Long> ids, String pwd);
+
+    /**
+     * 重置密码
+     * @param roleId 角色id
+     * @param pageable 分页参数
+     */
+    PageResult<UserDto> findByRoleId(Long roleId, Pageable pageable);
+
 }

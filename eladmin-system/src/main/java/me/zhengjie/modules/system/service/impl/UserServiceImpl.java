@@ -30,6 +30,7 @@ import me.zhengjie.modules.system.service.dto.*;
 import me.zhengjie.modules.system.service.mapstruct.UserMapper;
 import me.zhengjie.utils.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -265,6 +266,16 @@ public class UserServiceImpl implements UserService {
         }
         FileUtil.downloadExcel(list, response);
     }
+
+    @Override
+    public PageResult<UserDto> findByRoleId(Long roleId, Pageable pageable) {
+        // 使用已有的 userRepository.findByRoleId(roleId) 方法获取数据
+        List<User> users = userRepository.findByRoleId(roleId);
+        // 转换为分页结果
+        Page<User> page = new PageImpl<>(users, pageable, users.size());
+        return PageUtil.toPage(page.map(userMapper::toDto));
+    }
+
 
     /**
      * 清理缓存

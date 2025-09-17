@@ -196,6 +196,17 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @ApiOperation("根据角色ID查询用户")
+    @GetMapping(value = "/role/{roleId}")
+    @PreAuthorize("@el.check('user:list')")
+    public ResponseEntity<PageResult<UserDto>> getUsersByRole(@PathVariable Long roleId, Pageable pageable){
+        UserQueryCriteria criteria = new UserQueryCriteria();
+        // 假设 UserQueryCriteria 中有 roleId 字段，如果没有需要添加
+        // 这里需要修改查询逻辑以支持通过角色ID查询
+        return new ResponseEntity<>(userService.findByRoleId(roleId, pageable), HttpStatus.OK);
+    }
+
+
     /**
      * 如果当前用户的角色级别低于创建用户的角色级别，则抛出权限不足的错误
      * @param resources /
