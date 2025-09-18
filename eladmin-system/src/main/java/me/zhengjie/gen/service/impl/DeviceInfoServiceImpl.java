@@ -1,3 +1,4 @@
+// E:/User/desktop/tplink/JavaProjects/eladmin/eladmin-system/src/main/java/me/zhengjie/gen/service/impl/DeviceInfoServiceImpl.java
 /*
 *  Copyright 2019-2025 Zheng Jie
 *
@@ -36,6 +37,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 import me.zhengjie.utils.PageResult;
 
 /**
@@ -73,6 +75,9 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(DeviceInfo resources) {
+        if(deviceInfoRepository.existsByModel(resources.getModel())){
+            throw new RuntimeException("设备型号已存在");
+        }
         deviceInfoRepository.save(resources);
     }
 
@@ -99,8 +104,28 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
             Map<String,Object> map = new LinkedHashMap<>();
             map.put("模型类型", deviceInfo.getModel());
             map.put("模型版本", deviceInfo.getModelVersion());
+            map.put("设备名称", deviceInfo.getName());
+            map.put("设备类型", deviceInfo.getType());
+            map.put("制造商", deviceInfo.getManufacturer());
+            map.put("规格参数", deviceInfo.getSpecifications());
+            map.put("状态", deviceInfo.getStatus() == 1 ? "上线" : "下线");
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);
     }
+
+    @Override
+    public List<DeviceInfoDto> getAllActiveDevices() {
+        return deviceInfoRepository.findByStatus(1).stream()
+                .map(deviceInfoMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DeviceInfoDto> searchActiveDevices(String keyword) {
+        return deviceInfoRepository.findActiveDevicesByKeyword(keyword).stream()
+                .map(deviceInfoMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }

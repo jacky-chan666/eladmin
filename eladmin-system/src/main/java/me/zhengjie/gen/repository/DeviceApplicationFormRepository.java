@@ -15,26 +15,26 @@
 */
 package me.zhengjie.gen.repository;
 
-import me.zhengjie.gen.domain.DeviceInfo;
+import me.zhengjie.gen.domain.DeviceApplicationForm;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import java.util.List;
-
 
 /**
 * @website https://eladmin.vip
-* @author chen jiayuan
-* @date 2025-09-16
+* @author Chen Jiayuan
+* @date 2025-09-18
 **/
-public interface DeviceInfoRepository extends JpaRepository<DeviceInfo, Integer>, JpaSpecificationExecutor<DeviceInfo> {
-    boolean existsByModel(String model);
-
-    DeviceInfo findByModel(String model);
-
-    List<DeviceInfo> findByStatus(Integer status);
-
-    @Query("SELECT d FROM DeviceInfo d WHERE d.status = 1 AND (d.model LIKE %:keyword% OR d.name LIKE %:keyword%)")
-    List<DeviceInfo> findActiveDevicesByKeyword(@Param("keyword") String keyword);
+public interface DeviceApplicationFormRepository extends JpaRepository<DeviceApplicationForm, Integer>, JpaSpecificationExecutor<DeviceApplicationForm> {
+    /**
+    * 根据 ApplicantId 查询
+    * @param applicant_id /
+    * @return /
+    */
+    DeviceApplicationForm findByApplicantId(String applicant_id);
+    /**
+    * 根据 ApplicationDataId 查询
+    * @param application_data_id /
+    * @return /
+    */
+    DeviceApplicationForm findByApplicationDataId(Integer application_data_id);
 }

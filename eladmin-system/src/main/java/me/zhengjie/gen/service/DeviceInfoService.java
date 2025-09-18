@@ -1,3 +1,4 @@
+// E:/User/desktop/tplink/JavaProjects/eladmin/eladmin-system/src/main/java/me/zhengjie/gen/service/DeviceInfoService.java
 /*
 *  Copyright 2019-2025 Zheng Jie
 *
@@ -37,7 +38,7 @@ public interface DeviceInfoService {
     * 查询数据分页
     * @param criteria 条件
     * @param pageable 分页参数
-    * @return Map<String,Object>
+    * @return PageResult<DeviceInfoDto>
     */
     PageResult<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria, Pageable pageable);
 
@@ -80,4 +81,17 @@ public interface DeviceInfoService {
     * @throws IOException /
     */
     void download(List<DeviceInfoDto> all, HttpServletResponse response) throws IOException;
+
+    /**
+     * 查询所有上线的设备
+     * @return List<DeviceInfoDto>
+     */
+    List<DeviceInfoDto> getAllActiveDevices();
+
+    /**
+     * 根据关键字搜索上线的设备
+     * @param keyword 关键字
+     * @return List<DeviceInfoDto>
+     */
+    List<DeviceInfoDto> searchActiveDevices(String keyword);
 }

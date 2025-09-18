@@ -1,3 +1,4 @@
+// E:/User/desktop/tplink/JavaProjects/eladmin/eladmin-system/src/main/java/me/zhengjie/gen/rest/DeviceInfoController.java
 /*
 *  Copyright 2019-2025 Zheng Jie
 *
@@ -29,6 +30,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import me.zhengjie.utils.PageResult;
 
@@ -39,7 +41,7 @@ import me.zhengjie.utils.PageResult;
 **/
 @RestController
 @RequiredArgsConstructor
-@Api(tags = "测试生成")
+@Api(tags = "设备信息管理")
 @RequestMapping("/api/deviceInfo")
 public class DeviceInfoController {
 
@@ -53,16 +55,15 @@ public class DeviceInfoController {
     }
 
     @GetMapping
-    @ApiOperation("查询测试生成")
+    @ApiOperation("查询设备信息")
     @PreAuthorize("@el.check('deviceInfo:list')")
-//    @AnonymousAccess
     public ResponseEntity<PageResult<DeviceInfoDto>> queryDeviceInfo(DeviceInfoQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(deviceInfoService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
     @PostMapping
-    @Log("新增测试生成")
-    @ApiOperation("新增测试生成")
+    @Log("新增设备信息")
+    @ApiOperation("新增设备信息")
     @PreAuthorize("@el.check('deviceInfo:add')")
     public ResponseEntity<Object> createDeviceInfo(@Validated @RequestBody DeviceInfo resources){
         deviceInfoService.create(resources);
@@ -70,8 +71,8 @@ public class DeviceInfoController {
     }
 
     @PutMapping
-    @Log("修改测试生成")
-    @ApiOperation("修改测试生成")
+    @Log("修改设备信息")
+    @ApiOperation("修改设备信息")
     @PreAuthorize("@el.check('deviceInfo:edit')")
     public ResponseEntity<Object> updateDeviceInfo(@Validated @RequestBody DeviceInfo resources){
         deviceInfoService.update(resources);
@@ -79,11 +80,23 @@ public class DeviceInfoController {
     }
 
     @DeleteMapping
-    @Log("删除测试生成")
-    @ApiOperation("删除测试生成")
+    @Log("删除设备信息")
+    @ApiOperation("删除设备信息")
     @PreAuthorize("@el.check('deviceInfo:del')")
     public ResponseEntity<Object> deleteDeviceInfo(@ApiParam(value = "传ID数组[]") @RequestBody Integer[] ids) {
         deviceInfoService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/active")
+    @ApiOperation("查询所有上线的设备信息")
+    public ResponseEntity<List<DeviceInfoDto>> getAllActiveDevices() {
+        return new ResponseEntity<>(deviceInfoService.getAllActiveDevices(), HttpStatus.OK);
+    }
+
+    @GetMapping("/active/search")
+    @ApiOperation("搜索上线的设备信息")
+    public ResponseEntity<List<DeviceInfoDto>> searchActiveDevices(@RequestParam String keyword) {
+        return new ResponseEntity<>(deviceInfoService.searchActiveDevices(keyword), HttpStatus.OK);
     }
 }
