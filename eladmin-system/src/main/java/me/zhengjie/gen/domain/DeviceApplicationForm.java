@@ -20,7 +20,6 @@ import cn.hutool.core.bean.BeanUtil;
 import io.swagger.annotations.ApiModelProperty;
 import cn.hutool.core.bean.copier.CopyOptions;
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.sql.Timestamp;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -57,15 +56,15 @@ public class DeviceApplicationForm implements Serializable {
     @ApiModelProperty(value = "id")
     private Integer id;
 
-    @Column(name = "`applicant_id`",unique = true,nullable = false)
+    @Column(name = "`uuid`",unique = true,nullable = false)
     @NotBlank
     @ApiModelProperty(value = "申请单UUID")
-    private String applicantId;
+    private String uuid;
 
-    @Column(name = "`applicant_name`",nullable = false)
+    @Column(name = "`applicant_username`",nullable = false)
     @NotBlank
-    @ApiModelProperty(value = "申请人姓名")
-    private String applicantName;
+    @ApiModelProperty(value = "申请人用户名")
+    private String applicantUserName;
 
     @Column(name = "`department`")
     @ApiModelProperty(value = "所属部门")

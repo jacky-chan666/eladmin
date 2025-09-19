@@ -33,10 +33,10 @@ public class DeviceApplicationFormDto implements Serializable {
     private Integer id;
 
     @ApiModelProperty(value = "申请单UUID")
-    private String applicantId;
+    private String uuid;
 
     @ApiModelProperty(value = "申请人姓名")
-    private String applicantName;
+    private String applicantUserName;
 
     @ApiModelProperty(value = "所属部门")
     private String department;
@@ -107,7 +107,6 @@ public class DeviceApplicationFormDto implements Serializable {
     // 在 DeviceApplicationFormDto.java 中添加以下字段
     @ApiModelProperty(value = "设备信息详情（JSON格式存储）")
     private String deviceInfoDetails;
-
 
     @ApiModelProperty(value = "createdAt")
     private Timestamp createdAt;

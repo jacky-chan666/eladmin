@@ -1,25 +1,28 @@
 /*
-*  Copyright 2019-2025 Zheng Jie
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*  http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*/
+ *  Copyright 2019-2025 Zheng Jie
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package me.zhengjie.gen.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.zhengjie.gen.domain.ApprovalRecord;
 import me.zhengjie.gen.domain.CurrentApprovalStatus;
 import me.zhengjie.gen.domain.DeviceApplicationForm;
 import me.zhengjie.exception.EntityExistException;
 import me.zhengjie.gen.domain.DeviceInfo;
+import me.zhengjie.gen.domain.vo.DeviceApplicationFormVo;
 import me.zhengjie.gen.repository.ApprovalRecordRepository;
 import me.zhengjie.gen.repository.CurrentApprovalStatusRepository;
 import me.zhengjie.gen.repository.DeviceInfoRepository;
@@ -49,11 +52,11 @@ import javax.servlet.http.HttpServletResponse;
 import me.zhengjie.utils.PageResult;
 
 /**
-* @website https://eladmin.vip
-* @description 服务实现
-* @author Chen Jiayuan
-* @date 2025-09-18
-**/
+ * @website https://eladmin.vip
+ * @description 服务实现
+ * @author Chen Jiayuan
+ * @date 2025-09-18
+ **/
 @Service
 @RequiredArgsConstructor
 public class DeviceApplicationFormServiceImpl implements DeviceApplicationFormService {
@@ -86,8 +89,8 @@ public class DeviceApplicationFormServiceImpl implements DeviceApplicationFormSe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(DeviceApplicationForm resources) {
-        if(deviceApplicationFormRepository.findByApplicantId(resources.getApplicantId()) != null){
-            throw new EntityExistException(DeviceApplicationForm.class,"applicant_id",resources.getApplicantId());
+        if(deviceApplicationFormRepository.findByUuid(resources.getUuid()) != null){
+            throw new EntityExistException(DeviceApplicationForm.class,"uuid",resources.getUuid());
         }
         if(deviceApplicationFormRepository.findByApplicationDataId(resources.getApplicationDataId()) != null){
             throw new EntityExistException(DeviceApplicationForm.class,"application_data_id",resources.getApplicationDataId().toString());
@@ -101,9 +104,9 @@ public class DeviceApplicationFormServiceImpl implements DeviceApplicationFormSe
         DeviceApplicationForm deviceApplicationForm = deviceApplicationFormRepository.findById(resources.getId()).orElseGet(DeviceApplicationForm::new);
         ValidationUtil.isNull( deviceApplicationForm.getId(),"DeviceApplicationForm","id",resources.getId());
         DeviceApplicationForm deviceApplicationForm1 = null;
-        deviceApplicationForm1 = deviceApplicationFormRepository.findByApplicantId(resources.getApplicantId());
+        deviceApplicationForm1 = deviceApplicationFormRepository.findByUuid(resources.getUuid());
         if(deviceApplicationForm1 != null && !deviceApplicationForm1.getId().equals(deviceApplicationForm.getId())){
-            throw new EntityExistException(DeviceApplicationForm.class,"applicant_id",resources.getApplicantId());
+            throw new EntityExistException(DeviceApplicationForm.class,"uuid",resources.getUuid());
         }
         deviceApplicationForm1 = deviceApplicationFormRepository.findByApplicationDataId(resources.getApplicationDataId());
         if(deviceApplicationForm1 != null && !deviceApplicationForm1.getId().equals(deviceApplicationForm.getId())){
@@ -125,8 +128,8 @@ public class DeviceApplicationFormServiceImpl implements DeviceApplicationFormSe
         List<Map<String, Object>> list = new ArrayList<>();
         for (DeviceApplicationFormDto deviceApplicationForm : all) {
             Map<String,Object> map = new LinkedHashMap<>();
-            map.put("申请单UUID", deviceApplicationForm.getApplicantId());
-            map.put("申请人姓名", deviceApplicationForm.getApplicantName());
+            map.put("申请单UUID", deviceApplicationForm.getUuid());
+            map.put("申请人姓名", deviceApplicationForm.getApplicantUserName());
             map.put("所属部门", deviceApplicationForm.getDepartment());
             map.put("申请日期", deviceApplicationForm.getApplicationDate());
             map.put("申请数据id", deviceApplicationForm.getApplicationDataId());
@@ -158,66 +161,97 @@ public class DeviceApplicationFormServiceImpl implements DeviceApplicationFormSe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void submitApplication(DeviceApplicationForm resources) {
+    public void submitApplication(DeviceApplicationFormVo vo) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
-        // 保存或更新申请单
-        if (resources.getId() == null) {
-            // 首次提交
-            resources.setStatus(0); // 待审批状态
-            resources.setCreatedAt(now);
-            resources.setUpdatedAt(now);
-            deviceApplicationFormRepository.save(resources);
+        // 查询是否已存在该申请单（根据 id 判断）
+        DeviceApplicationForm form;
+        boolean isNew = vo.getId() == null;
+
+        if (isNew) {
+            form = new DeviceApplicationForm();
+            form.setStatus(DeviceApplicationForm.STATUS_PENDING); // 待审批
+            form.setCreatedAt(now);
+            form.setUpdatedAt(now);
         } else {
-            // 重新提交
-            DeviceApplicationForm existing = deviceApplicationFormRepository.findById(resources.getId())
+            form = deviceApplicationFormRepository.findById(vo.getId())
                     .orElseThrow(() -> new RuntimeException("申请单不存在"));
-            existing.setApplicationTitle(resources.getApplicationTitle());
-            existing.setApplicationReason(resources.getApplicationReason());
-            existing.setTestContact(resources.getTestContact());
-            existing.setTestLeader(resources.getTestLeader());
-            existing.setDevContact(resources.getDevContact());
-            existing.setDevLeader(resources.getDevLeader());
-            existing.setStatus(0); // 重置为待审批状态
-            existing.setUpdatedAt(now);
-            deviceApplicationFormRepository.save(existing);
+            // 更新模式：复制新数据并重置状态
+            form.setUpdatedAt(now);
+            form.setStatus(DeviceApplicationForm.STATUS_PENDING);
         }
 
-        // 获取申请单ID
-        Integer applicationFormId = resources.getId() != null ? resources.getId() : resources.getId();
+        // === 手动映射 VO 字段到 Entity ===
+        mapVoToEntity(form, vo);
 
-        // 确定审批轮次
+        // 保存申请单
+        deviceApplicationFormRepository.save(form);
+
+        // 获取申请单 ID
+        Integer applicationFormId = form.getId();
+
+        // 确定当前审批轮次
         Integer round = approvalRecordRepository.findMaxRoundByApplicationFormId(applicationFormId) + 1;
 
-        // 清除之前的审批状态
+        // 清除上一轮未完成的审批状态（防止重复）
         currentApprovalStatusRepository.deleteByApplicationFormIdAndRound(applicationFormId, round - 1);
 
-        // 初始化第一阶段审批状态（并行审批）
+        // 初始化第一阶段审批人（并行审批）
         List<CurrentApprovalStatus> initialApprovals = new ArrayList<>();
 
-        // 添加测试接口人
+        // 测试接口人
         CurrentApprovalStatus testContactStatus = new CurrentApprovalStatus();
         testContactStatus.setApplicationFormId(applicationFormId);
         testContactStatus.setRound(round);
         testContactStatus.setStepOrder(1);
         testContactStatus.setApproverRole("test_contact");
-        testContactStatus.setApproverName(resources.getTestContact());
+        testContactStatus.setApproverName(vo.getTestContact());
         testContactStatus.setStatus(0); // 待审批
         initialApprovals.add(testContactStatus);
 
-        // 添加研发接口人
+        // 研发接口人
         CurrentApprovalStatus devContactStatus = new CurrentApprovalStatus();
         devContactStatus.setApplicationFormId(applicationFormId);
         devContactStatus.setRound(round);
         devContactStatus.setStepOrder(1);
         devContactStatus.setApproverRole("dev_contact");
-        devContactStatus.setApproverName(resources.getDevContact());
+        devContactStatus.setApproverName(vo.getDevContact());
         devContactStatus.setStatus(0); // 待审批
         initialApprovals.add(devContactStatus);
 
         // 保存初始审批状态
         currentApprovalStatusRepository.saveAll(initialApprovals);
     }
+
+    /**
+     * 将 VO 中的数据复制到 JPA Entity
+     */
+    private final ObjectMapper objectMapper = new ObjectMapper(); // Jackson
+
+    private void mapVoToEntity(DeviceApplicationForm entity, DeviceApplicationFormVo vo) {
+        // 基础字段（标题、理由等）
+        entity.setApplicationTitle(vo.getApplicationTitle());
+        entity.setApplicationReason(vo.getApplicationReason());
+        entity.setTestContact(vo.getTestContact());
+        entity.setTestLeader(vo.getTestLeader());
+        entity.setDevContact(vo.getDevContact());
+        entity.setDevLeader(vo.getDevLeader());
+
+        // 申请人信息
+        entity.setUuid(vo.getUuid());
+        entity.setApplicantUserName(vo.getApplicantUserName());
+
+        // === 关键修改：构建设备信息详情 JSON ===
+
+        try {
+            String json = objectMapper.writeValueAsString(vo.getDeviceDetail());
+            entity.setDeviceInfoDetails(json); // 写入 JSON 字符串
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("无法序列化设备信息为JSON", e);
+        }
+    }
+
+
 
     @Override
     public List<PendingApprovalDto> getPendingApprovals(String approverName) {
@@ -240,6 +274,51 @@ public class DeviceApplicationFormServiceImpl implements DeviceApplicationFormSe
 
         return result;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResult<PendingApprovalDto> getPendingApprovals(DeviceApplicationFormQueryCriteria criteria, Pageable pageable) {
+        // Step 1: 构建查询条件 —— 查找 status=0 的 CurrentApprovalStatus
+        List<CurrentApprovalStatus> pendingStatuses = currentApprovalStatusRepository
+                .findByApproverNameAndStatusOrderByApplicationFormId(criteria.getApproverName(), 0);
+
+        // Step 2: 过滤有效的申请单（status == 0 或 1）
+        List<PendingApprovalDto> result = pendingStatuses.stream()
+                .map(status -> {
+                    Optional<DeviceApplicationForm> formOpt = deviceApplicationFormRepository
+                            .findById(status.getApplicationFormId());
+
+                    if (formOpt.isPresent()) {
+                        DeviceApplicationForm form = formOpt.get();
+                        // 只保留状态为“待审批”或“审批中”的申请单
+                        if (form.getStatus() == 0 || form.getStatus() == 1) {
+                            PendingApprovalDto dto = new PendingApprovalDto();
+                            dto.setApplicationForm(deviceApplicationFormMapper.toDto(form));
+                            dto.setRound(status.getRound());
+                            dto.setStepOrder(status.getStepOrder());
+                            return dto;
+                        }
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        // Step 3: 手动分页
+        int total = result.size();
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), total);
+
+        List<PendingApprovalDto> pagedContent = result.subList(start, end);
+
+        // 构造 PageResult（使用项目中定义的字段）
+        PageResult<PendingApprovalDto> pageResult = new PageResult<>();
+        pageResult.setContent(pagedContent);
+        pageResult.setTotalElements(total);  // 注意：是 totalElements，类型为 long，int 自动转 long
+
+        return pageResult;
+    }
+
 
     @Override
     public List<DeviceApplicationFormDto> getApprovedApplications(String approverName) {
@@ -525,8 +604,8 @@ public class DeviceApplicationFormServiceImpl implements DeviceApplicationFormSe
                 throw new RuntimeException("只能更新草稿状态的申请单");
             }
 
-            existing.setApplicantId(resources.getApplicantId());
-            existing.setApplicantName(resources.getApplicantName());
+            existing.setUuid(resources.getUuid());
+            existing.setApplicantUserName(resources.getApplicantUserName());
             existing.setDepartment(resources.getDepartment());
             existing.setApplicationDate(resources.getApplicationDate());
             existing.setApplicationType(resources.getApplicationType());

@@ -27,10 +27,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface DeviceApplicationFormRepository extends JpaRepository<DeviceApplicationForm, Integer>, JpaSpecificationExecutor<DeviceApplicationForm> {
     /**
     * 根据 ApplicantId 查询
-    * @param applicant_id /
+    * @param uuid /
     * @return /
     */
-    DeviceApplicationForm findByApplicantId(String applicant_id);
+    DeviceApplicationForm findByUuid(String uuid);
     /**
     * 根据 ApplicationDataId 查询
     * @param application_data_id /

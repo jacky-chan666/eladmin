@@ -1,22 +1,23 @@
 /*
-*  Copyright 2019-2025 Zheng Jie
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*  http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*/
+ *  Copyright 2019-2025 Zheng Jie
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package me.zhengjie.gen.rest;
 
 import me.zhengjie.annotation.Log;
 import me.zhengjie.gen.domain.DeviceApplicationForm;
+import me.zhengjie.gen.domain.vo.DeviceApplicationFormVo;
 import me.zhengjie.gen.service.DeviceApplicationFormService;
 import me.zhengjie.gen.service.dto.DeviceApplicationFormQueryCriteria;
 import me.zhengjie.gen.service.dto.PendingApprovalDto;
@@ -34,13 +35,12 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import me.zhengjie.utils.PageResult;
 import me.zhengjie.gen.service.dto.DeviceApplicationFormDto;
-import me.zhengjie.gen.service.dto.DeviceApplicationFormDto;
 
 /**
-* @website https://eladmin.vip
-* @author Chen Jiayuan
-* @date 2025-09-18
-**/
+ * @website https://eladmin.vip
+ * @author Chen Jiayuan
+ * @date 2025-09-18
+ **/
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "审核接口")
@@ -94,18 +94,29 @@ public class DeviceApplicationFormController {
     @Log("提交申请单")
     @ApiOperation("提交申请单（包括首次提交和重新提交）")
     @PreAuthorize("@el.check('deviceApplicationForm:add') or @el.check('deviceApplicationForm:edit')")
-    public ResponseEntity<Object> submitApplication(@Validated @RequestBody DeviceApplicationForm resources){
+    public ResponseEntity<Object> submitApplication(@Validated @RequestBody DeviceApplicationFormVo resources){
         deviceApplicationFormService.submitApplication(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/pending-approvals")
-    @ApiOperation("查询当前用户的待审批任务")
+    @ApiOperation("查询当前用户的待审批任务（分页）")
     @PreAuthorize("@el.check('deviceApplicationForm:list')")
-    public ResponseEntity<List<PendingApprovalDto>> getPendingApprovals(
-            @ApiParam(value = "审批人姓名") @RequestParam String approverName){
-        return new ResponseEntity<>(deviceApplicationFormService.getPendingApprovals(approverName), HttpStatus.OK);
+    public ResponseEntity<PageResult<PendingApprovalDto>> queryPendingApprovals(
+            DeviceApplicationFormQueryCriteria criteria,
+            Pageable pageable) {
+        PageResult<PendingApprovalDto> result = deviceApplicationFormService.getPendingApprovals(criteria, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+
+//    @GetMapping("/pending-approvals")
+//    @ApiOperation("查询当前用户的待审批任务")
+//    @PreAuthorize("@el.check('deviceApplicationForm:list')")
+//    public ResponseEntity<List<PendingApprovalDto>> queryPendingApprovals(
+//            @ApiParam(value = "审批人姓名") @RequestParam String approverName){
+//        return new ResponseEntity<>(deviceApplicationFormService.getPendingApprovals(approverName), HttpStatus.OK);
+//    }
 
     @GetMapping("/approved-applications")
     @ApiOperation("查询当前用户已审批的任务")
