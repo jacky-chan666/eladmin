@@ -94,4 +94,18 @@ public interface DeviceInfoService {
      * @return List<DeviceInfoDto>
      */
     List<DeviceInfoDto> searchActiveDevices(String keyword);
+
+    void createNewDevice(DeviceInfo deviceInfo);
+
+    void updateDevice(DeviceInfo deviceInfo);
+
+    void setDeviceStatus(Integer deviceId, Integer status);
+
+    /**
+     * 解析设备信息详情JSON字符串
+     * @param deviceInfoDetails 设备信息详情JSON字符串
+     * @return DeviceInfo对象
+     */
+    DeviceInfo parseDeviceInfoDetails(String deviceInfoDetails);
+
 }

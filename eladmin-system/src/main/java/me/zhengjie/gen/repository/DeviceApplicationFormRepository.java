@@ -37,4 +37,6 @@ public interface DeviceApplicationFormRepository extends JpaRepository<DeviceApp
     * @return /
     */
     DeviceApplicationForm findByApplicationDataId(Integer application_data_id);
+
+
 }

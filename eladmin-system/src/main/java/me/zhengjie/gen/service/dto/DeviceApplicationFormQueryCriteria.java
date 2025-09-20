@@ -55,5 +55,5 @@ public class DeviceApplicationFormQueryCriteria{
     /** 准确 */
     @Query(type = Query.Type.EQUAL)
     @ApiModelProperty(value = "审核人姓名")
-    private String approverName;  // 当前待审批人姓名
+    private String approverUserName;  // 当前待审批人姓名
 }

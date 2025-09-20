@@ -25,7 +25,7 @@ public class ApprovalRecordDto implements Serializable {
     private String approverRole;
 
     @ApiModelProperty(value = "审批人姓名")
-    private String approverName;
+    private String approverUserName;
 
     @ApiModelProperty(value = "审批状态：0-待审批，1-通过，2-驳回")
     private Integer approvalStatus;

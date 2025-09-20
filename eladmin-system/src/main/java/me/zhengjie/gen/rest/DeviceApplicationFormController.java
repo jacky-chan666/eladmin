@@ -90,6 +90,18 @@ public class DeviceApplicationFormController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/delete")
+    @Log("删除申请单")
+    @ApiOperation("删除申请单")
+    @PreAuthorize("@el.check('deviceApplicationForm:edit')")
+    public ResponseEntity<Object> deleteApplicationForm(
+            @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId,
+            @ApiParam(value = "申请人姓名") @RequestParam String applicantUserName) {
+        deviceApplicationFormService.deleteApplicationForm(applicationFormId, applicantUserName);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
     @PostMapping("/submit")
     @Log("提交申请单")
     @ApiOperation("提交申请单（包括首次提交和重新提交）")
@@ -110,21 +122,18 @@ public class DeviceApplicationFormController {
     }
 
 
-//    @GetMapping("/pending-approvals")
-//    @ApiOperation("查询当前用户的待审批任务")
-//    @PreAuthorize("@el.check('deviceApplicationForm:list')")
-//    public ResponseEntity<List<PendingApprovalDto>> queryPendingApprovals(
-//            @ApiParam(value = "审批人姓名") @RequestParam String approverName){
-//        return new ResponseEntity<>(deviceApplicationFormService.getPendingApprovals(approverName), HttpStatus.OK);
-//    }
 
+    // 修改 DeviceApplicationFormController.java 中的 getApprovedApplications 方法
     @GetMapping("/approved-applications")
-    @ApiOperation("查询当前用户已审批的任务")
+    @ApiOperation("查询当前用户已审批的任务（分页）")
     @PreAuthorize("@el.check('deviceApplicationForm:list')")
-    public ResponseEntity<List<DeviceApplicationFormDto>> getApprovedApplications(
-            @ApiParam(value = "审批人姓名") @RequestParam String approverName){
-        return new ResponseEntity<>(deviceApplicationFormService.getApprovedApplications(approverName), HttpStatus.OK);
+    public ResponseEntity<PageResult<DeviceApplicationFormDto>> getApprovedApplications(
+            DeviceApplicationFormQueryCriteria criteria,
+            Pageable pageable) {
+        PageResult<DeviceApplicationFormDto> result = deviceApplicationFormService.getApprovedApplications(criteria, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
 
     @PostMapping("/approve")
     @Log("审批申请单")
@@ -132,10 +141,10 @@ public class DeviceApplicationFormController {
     @PreAuthorize("@el.check('deviceApplicationForm:approve')")
     public ResponseEntity<Object> approveApplication(
             @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId,
-            @ApiParam(value = "审批人姓名") @RequestParam String approverName,
+            @ApiParam(value = "审批人姓名") @RequestParam String approverUserName,
             @ApiParam(value = "审批状态：1-通过，2-驳回") @RequestParam Integer approvalStatus,
             @ApiParam(value = "审批意见") @RequestParam(required = false) String comment){
-        deviceApplicationFormService.approveApplication(applicationFormId, approverName, approvalStatus, comment);
+        deviceApplicationFormService.approveApplication(applicationFormId, approverUserName, approvalStatus, comment);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -153,10 +162,22 @@ public class DeviceApplicationFormController {
     @Log("保存申请单草稿")
     @ApiOperation("保存申请单草稿")
     @PreAuthorize("@el.check('deviceApplicationForm:add') or @el.check('deviceApplicationForm:edit')")
-    public ResponseEntity<Object> saveDraft(@Validated @RequestBody DeviceApplicationForm resources){
+    public ResponseEntity<Object> saveDraft(@Validated @RequestBody DeviceApplicationFormVo resources){
         deviceApplicationFormService.saveDraft(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @PostMapping("/withdraw")
+    @Log("撤回申请单")
+    @ApiOperation("撤回申请单")
+    @PreAuthorize("@el.check('deviceApplicationForm:edit')")
+    public ResponseEntity<Object> withdrawApplication(
+            @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId,
+            @ApiParam(value = "申请人姓名") @RequestParam String applicantUserName) {
+        deviceApplicationFormService.withdrawApplication(applicationFormId, applicantUserName);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @PostMapping("/manual-trigger-firmware")
     @Log("手动触发固件校验")

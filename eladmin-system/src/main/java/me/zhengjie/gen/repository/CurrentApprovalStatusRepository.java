@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface CurrentApprovalStatusRepository extends JpaRepository<CurrentApprovalStatus, Integer>, JpaSpecificationExecutor<CurrentApprovalStatus> {
 
-    List<CurrentApprovalStatus> findByApproverNameAndStatusOrderByApplicationFormId(String approverName, Integer status);
+    List<CurrentApprovalStatus> findByApproverUserNameAndStatusOrderByApplicationFormId(String approverUserName, Integer status);
 
     List<CurrentApprovalStatus> findByApplicationFormIdAndRound(Integer applicationFormId, Integer round);
 
@@ -21,4 +21,8 @@ public interface CurrentApprovalStatusRepository extends JpaRepository<CurrentAp
 
     @Query("SELECT COUNT(*) FROM CurrentApprovalStatus WHERE applicationFormId = ?1 AND round = ?2 AND stepOrder = ?3 AND status = 0")
     Integer countPendingByApplicationFormIdAndRoundAndStepOrder(Integer applicationFormId, Integer round, Integer stepOrder);
+
+    @Modifying
+    void deleteByApplicationFormId(Integer applicationFormId);
+
 }

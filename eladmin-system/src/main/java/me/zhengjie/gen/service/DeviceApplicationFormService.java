@@ -92,26 +92,24 @@ public interface DeviceApplicationFormService {
 
     /**
      * 查询当前用户的待审批任务
-     * @param approverName 审批人姓名
+     * @param approverUserName 审批人姓名
      * @return 待审批任务列表
      */
-    List<PendingApprovalDto> getPendingApprovals(String approverName);
+    List<PendingApprovalDto> getPendingApprovals(String approverUserName);
 
-    /**
-     * 查询当前用户已审批的任务
-     * @param approverName 审批人姓名
-     * @return 已审批任务列表
-     */
-    List<DeviceApplicationFormDto> getApprovedApplications(String approverName);
+
+    // 修改 DeviceApplicationFormService.java 中的方法签名
+    PageResult<DeviceApplicationFormDto> getApprovedApplications(DeviceApplicationFormQueryCriteria criteria, Pageable pageable);
+
 
     /**
      * 审批申请单
      * @param applicationFormId 申请单ID
-     * @param approverName 审批人姓名
+     * @param approverUserName 审批人姓名
      * @param approvalStatus 审批状态（1-通过，2-驳回）
      * @param comment 审批意见
      */
-    void approveApplication(Integer applicationFormId, String approverName, Integer approvalStatus, String comment);
+    void approveApplication(Integer applicationFormId, String approverUserName, Integer approvalStatus, String comment);
 
     /**
      * 查询申请单的所有审批历史
@@ -130,7 +128,7 @@ public interface DeviceApplicationFormService {
      * 保存申请单草稿
      * @param resources 申请单
      */
-    void saveDraft(DeviceApplicationForm resources);
+    void saveDraft(DeviceApplicationFormVo resources);
 
     /**
      * 手动触发固件校验
@@ -152,5 +150,20 @@ public interface DeviceApplicationFormService {
 
 
     PageResult<PendingApprovalDto> getPendingApprovals(DeviceApplicationFormQueryCriteria criteria, Pageable pageable);
+
+    /**
+     * 撤回申请单
+     * @param applicationFormId 申请单ID
+     * @param applicantName 申请人姓名
+     */
+    void withdrawApplication(Integer applicationFormId, String applicantName);
+
+    // 在 DeviceApplicationFormService.java 中添加以下方法
+    /**
+     * 删除申请单（仅草稿状态可删除）
+     * @param applicationFormId 申请单ID
+     * @param applicantName 申请人姓名
+     */
+    void deleteApplicationForm(Integer applicationFormId, String applicantName);
 
 }

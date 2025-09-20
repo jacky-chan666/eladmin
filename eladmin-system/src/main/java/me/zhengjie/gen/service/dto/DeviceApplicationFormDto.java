@@ -41,9 +41,6 @@ public class DeviceApplicationFormDto implements Serializable {
     @ApiModelProperty(value = "所属部门")
     private String department;
 
-    @ApiModelProperty(value = "申请日期")
-    private Timestamp applicationDate;
-
     @ApiModelProperty(value = "申请数据id")
     private Integer applicationDataId;
 

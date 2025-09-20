@@ -1,3 +1,4 @@
+// 修改 DeviceInfoDto.java
 /*
 *  Copyright 2019-2025 Zheng Jie
 *
@@ -32,23 +33,29 @@ public class DeviceInfoDto implements Serializable {
     @ApiModelProperty(value = "ID")
     private Integer id;
 
-    @ApiModelProperty(value = "模型类型")
+    @ApiModelProperty(value = "设备型号，例如：ER7206")
     private String model;
 
-    @ApiModelProperty(value = "模型版本")
+    @ApiModelProperty(value = "设备版本，例如：1.0")
     private String modelVersion;
 
-    @ApiModelProperty(value = "设备名称")
-    private String name;
+    @ApiModelProperty(value = "设备类型：NORMAL / PRO / COMBINED / PRO_FREE")
+    private String modelType;
 
-    @ApiModelProperty(value = "设备类型")
+    @ApiModelProperty(value = "设备种类：gateway / switch / ap / olt / other")
     private String type;
 
-    @ApiModelProperty(value = "制造商")
-    private String manufacturer;
+    @ApiModelProperty(value = "硬件版本，例如：v1.2.3")
+    private String hwVersion;
 
-    @ApiModelProperty(value = "规格参数")
-    private String specifications;
+    @ApiModelProperty(value = "模版版本，例如：5.15.21.1")
+    private String controllerVersion;
+
+    @ApiModelProperty(value = "设备版本号，例如：1.0")
+    private String version;
+
+    @ApiModelProperty(value = "收养报文（JSON字符串），示例：{\"modelId\": \"123\"}")
+    private String adoptResp;
 
     @ApiModelProperty(value = "状态：0-下线，1-上线")
     private Integer status;

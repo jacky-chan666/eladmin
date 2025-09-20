@@ -1,4 +1,4 @@
-// E:/User/desktop/tplink/JavaProjects/eladmin/eladmin-system/src/main/java/me/zhengjie/gen/domain/DeviceInfo.java
+// 修改 DeviceInfo.java
 /*
  *  Copyright 2019-2025 Zheng Jie
  *
@@ -36,6 +36,10 @@ import java.io.Serializable;
 @Table(name="device_info")
 public class DeviceInfo implements Serializable {
 
+    // 设备状态常量
+    public static final Integer STATUS_OFFLINE = 0;  // 下线
+    public static final Integer STATUS_ONLINE = 1;   // 上线
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -44,39 +48,47 @@ public class DeviceInfo implements Serializable {
 
     @Column(name = "model",nullable = false, unique = true)
     @NotBlank
-    @ApiModelProperty(value = "模型类型")
+    @ApiModelProperty(value = "设备型号，例如：ER7206")
     private String model;
 
-    @Column(name = "`model_version`",nullable = false)
+    @Column(name = "model_version",nullable = false)
     @NotBlank
-    @ApiModelProperty(value = "模型版本")
+    @ApiModelProperty(value = "设备版本，例如：1.0")
     private String modelVersion;
 
-    @Column(name = "name")
-    @ApiModelProperty(value = "设备名称")
-    private String name;
+    @Column(name = "model_type")
+    @ApiModelProperty(value = "设备类型：NORMAL / PRO / COMBINED / PRO_FREE")
+    private String modelType;
 
     @Column(name = "type")
-    @ApiModelProperty(value = "设备类型")
+    @ApiModelProperty(value = "设备种类：gateway / switch / ap / olt / other")
     private String type;
 
-    @Column(name = "`manufacturer`")
-    @ApiModelProperty(value = "制造商")
-    private String manufacturer;
+    @Column(name = "hw_version")
+    @ApiModelProperty(value = "硬件版本，例如：v1.2.3")
+    private String hwVersion;
 
-    @Column(name = "`specifications`")
-    @ApiModelProperty(value = "规格参数")
-    private String specifications;
+    @Column(name = "controller_version")
+    @ApiModelProperty(value = "模版版本，例如：5.15.21.1")
+    private String controllerVersion;
+
+    @Column(name = "version")
+    @ApiModelProperty(value = "设备版本号，例如：1.0")
+    private String version;
+
+    @Column(name = "adopt_resp")
+    @ApiModelProperty(value = "收养报文（JSON字符串），示例：{\"modelId\": \"123\"}")
+    private String adoptResp;
 
     @Column(name = "status")
     @ApiModelProperty(value = "状态：0-下线，1-上线")
     private Integer status = 1; // 默认上线
 
-    @Column(name = "`created_at`")
+    @Column(name = "created_at")
     @ApiModelProperty(value = "创建时间")
     private Timestamp createdAt;
 
-    @Column(name = "`updated_at`")
+    @Column(name = "updated_at")
     @ApiModelProperty(value = "更新时间")
     private Timestamp updatedAt;
 

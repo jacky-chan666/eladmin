@@ -38,17 +38,27 @@ public class DeviceApplicationForm implements Serializable {
 
     // 状态常量定义
     public static final Integer STATUS_DRAFT = -1;        // 草稿
-    public static final Integer STATUS_PENDING = 0;       // 待审批
-    public static final Integer STATUS_APPROVED = 1;      // 审批通过
-    public static final Integer STATUS_FIRMWARE_VERIFY = 2; // 固件校验中
-    public static final Integer STATUS_FIRMWARE_FAILED = 3; // 固件校验失败
-    public static final Integer STATUS_SYNCING = 4;       // 同步中
-    public static final Integer STATUS_SYNC_FAILED = 5;   // 同步失败
-    public static final Integer STATUS_COMPLETED = 6;     // 已完成
-    public static final Integer STATUS_REJECTED = 7;      // 已驳回
-    public static final Integer STATUS_AUTO_PROCESSING = 8; // 自动处理中
-    public static final Integer STATUS_AUTO_FAILED = 9;   // 自动处理失败
-    public static final Integer STATUS_MANUAL_TRIGGERED = 10; // 手动触发
+    public static final Integer STATUS_SUBMITTED = 0;     // 已提交（新增状态）
+    public static final Integer STATUS_PENDING = 1;       // 待审批（原0改为1）
+    public static final Integer STATUS_APPROVED = 2;      // 审批通过（原1改为2）
+    public static final Integer STATUS_FIRMWARE_VERIFY = 3; // 固件校验中（原2改为3）
+    public static final Integer STATUS_FIRMWARE_FAILED = 4; // 固件校验失败（原3改为4）
+    public static final Integer STATUS_SYNCING = 5;       // 同步中（原4改为5）
+    public static final Integer STATUS_SYNC_FAILED = 6;   // 同步失败（原5改为6）
+    public static final Integer STATUS_COMPLETED = 7;     // 已完成（原6改为7）
+    public static final Integer STATUS_REJECTED = 8;      // 已驳回（原7改为8）
+    public static final Integer STATUS_AUTO_PROCESSING = 9; // 自动处理中（原8改为9）
+    public static final Integer STATUS_AUTO_FAILED = 10;   // 自动处理失败（原9改为10）
+    public static final Integer STATUS_MANUAL_TRIGGERED = 11; // 手动触发（原10改为11）
+    public static final Integer STATUS_WITHDRAWN = 12;    // 已撤回（新增状态）
+
+    // 申请单类型常量
+     public static final int APPLICATION_TYPE_ADD = 0;
+     public static final int APPLICATION_TYPE_MODIFY = 1;
+     public static final int APPLICATION_TYPE_ONLINE = 2;
+     public static final int APPLICATION_TYPE_OFFLINE = 3;
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,11 +79,6 @@ public class DeviceApplicationForm implements Serializable {
     @Column(name = "`department`")
     @ApiModelProperty(value = "所属部门")
     private String department;
-
-    @Column(name = "`application_date`",nullable = false)
-    @NotNull
-    @ApiModelProperty(value = "申请日期")
-    private Timestamp applicationDate;
 
     @Column(name = "`application_data_id`",unique = true)
     @ApiModelProperty(value = "申请数据id")
