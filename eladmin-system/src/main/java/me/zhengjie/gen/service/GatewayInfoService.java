@@ -1,4 +1,3 @@
-// E:/User/desktop/tplink/JavaProjects/eladmin/eladmin-system/src/main/java/me/zhengjie/gen/service/DeviceInfoService.java
 /*
 *  Copyright 2019-2025 Zheng Jie
 *
@@ -17,10 +16,11 @@
 package me.zhengjie.gen.service;
 
 import me.zhengjie.gen.domain.DeviceInfo;
-import me.zhengjie.gen.service.dto.DeviceInfoDto;
-import me.zhengjie.gen.service.dto.DeviceInfoQueryCriteria;
+import me.zhengjie.gen.domain.GatewayInfo;
+import me.zhengjie.gen.service.dto.GatewayInfoDto;
+import me.zhengjie.gen.service.dto.GatewayInfoQueryCriteria;
 import org.springframework.data.domain.Pageable;
-
+import java.util.Map;
 import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
@@ -29,44 +29,44 @@ import me.zhengjie.utils.PageResult;
 /**
 * @website https://eladmin.vip
 * @description 服务接口
-* @author chen jiayuan
-* @date 2025-09-16
+* @author Chen Jiayuan
+* @date 2025-09-21
 **/
-public interface DeviceInfoService extends DataInfoService<DeviceInfoDto, DeviceInfo, DeviceInfoQueryCriteria>{
+public interface GatewayInfoService extends DataInfoService<GatewayInfoDto, GatewayInfo, GatewayInfoQueryCriteria> {
 
     /**
     * 查询数据分页
     * @param criteria 条件
     * @param pageable 分页参数
-    * @return PageResult<DeviceInfoDto>
+    * @return Map<String,Object>
     */
-    PageResult<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria, Pageable pageable);
+    PageResult<GatewayInfoDto> queryAll(GatewayInfoQueryCriteria criteria, Pageable pageable);
 
     /**
     * 查询所有数据不分页
     * @param criteria 条件参数
-    * @return List<DeviceInfoDto>
+    * @return List<GatewayInfoDto>
     */
-    List<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria);
+    List<GatewayInfoDto> queryAll(GatewayInfoQueryCriteria criteria);
 
     /**
      * 根据ID查询
      * @param id ID
-     * @return DeviceInfoDto
+     * @return GatewayInfoDto
      */
-    DeviceInfoDto findById(Integer id);
+    GatewayInfoDto findById(Integer id);
 
     /**
     * 创建
     * @param resources /
     */
-    void create(DeviceInfo resources);
+    void create(GatewayInfo resources);
 
     /**
     * 编辑
     * @param resources /
     */
-    void update(DeviceInfo resources);
+    void update(GatewayInfo resources);
 
     /**
     * 多选删除
@@ -80,20 +80,7 @@ public interface DeviceInfoService extends DataInfoService<DeviceInfoDto, Device
     * @param response /
     * @throws IOException /
     */
-    void download(List<DeviceInfoDto> all, HttpServletResponse response) throws IOException;
-
-    /**
-     * 查询所有上线的设备
-     * @return List<DeviceInfoDto>
-     */
-    List<DeviceInfoDto> getAllActiveDevices();
-
-    /**
-     * 根据关键字搜索上线的设备
-     * @param keyword 关键字
-     * @return List<DeviceInfoDto>
-     */
-    List<DeviceInfoDto> searchActiveDevices(String keyword);
+    void download(List<GatewayInfoDto> all, HttpServletResponse response) throws IOException;
 
     void createFromJson(String dataDetail);
 
@@ -101,11 +88,6 @@ public interface DeviceInfoService extends DataInfoService<DeviceInfoDto, Device
 
     void setDataStatus(Integer id, Integer status);
 
-    /**
-     * 解析设备信息详情JSON字符串
-     * @param dataDetails 设备信息详情JSON字符串
-     * @return DeviceInfo对象
-     */
-    DeviceInfo parseDataDetails(String dataDetails);
+    GatewayInfo parseDataDetails(String dataDetails);
 
 }

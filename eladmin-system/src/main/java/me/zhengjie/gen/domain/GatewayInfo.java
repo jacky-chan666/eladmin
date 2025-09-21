@@ -22,7 +22,11 @@ import java.sql.Timestamp;
 @Entity
 @Data
 @Table(name="gateway_info")
-public class GateWayInfo implements Serializable {
+public class GatewayInfo implements Serializable {
+
+    // 设备状态常量
+    public static final Integer STATUS_OFFLINE = 0;  // 下线
+    public static final Integer STATUS_ONLINE = 1;   // 上线
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +37,7 @@ public class GateWayInfo implements Serializable {
     @Column(name = "model",nullable = false, unique = true)
     @NotBlank
     @ApiModelProperty(value = "sb模型类型")
-    private String sbmodel;
+    private String model;
 
     @Column(name = "`model_version`",nullable = false)
     @NotBlank
@@ -42,11 +46,11 @@ public class GateWayInfo implements Serializable {
 
     @Column(name = "sbname")
     @ApiModelProperty(value = "sb设备名称")
-    private String sbname;
+    private String name;
 
     @Column(name = "type")
     @ApiModelProperty(value = "sb设备类型")
-    private String sbtype;
+    private String type;
 
     @Column(name = "`manufacturer`")
     @ApiModelProperty(value = "制造商")
@@ -68,7 +72,7 @@ public class GateWayInfo implements Serializable {
     @ApiModelProperty(value = "更新时间")
     private Timestamp updatedAt;
 
-    public void copy(me.zhengjie.gen.domain.GateWayInfo source){
+    public void copy(GatewayInfo source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }
 }

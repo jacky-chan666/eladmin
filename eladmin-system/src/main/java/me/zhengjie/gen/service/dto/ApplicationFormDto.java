@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiModelProperty;
 * @date 2025-09-18
 **/
 @Data
-public class DeviceApplicationFormDto implements Serializable {
+public class ApplicationFormDto implements Serializable {
 
     @ApiModelProperty(value = "id")
     private Integer id;
@@ -47,8 +47,10 @@ public class DeviceApplicationFormDto implements Serializable {
     @ApiModelProperty(value = "申请单类型：新增，修改，上线，下线")
     private Integer applicationType;
 
-    @ApiModelProperty(value = "申请单数据类型：omada，vigi，adblocking")
+    // 修改 ApplicationFormDto.java 中的 applicationDataType 字段注释
+    @ApiModelProperty(value = "申请单数据类型：1-deviceInfo，2-gatewayInfo")
     private Integer applicationDataType;
+
 
     @ApiModelProperty(value = "申请单标题")
     private String applicationTitle;
@@ -101,9 +103,9 @@ public class DeviceApplicationFormDto implements Serializable {
     @ApiModelProperty(value = "审核历史表（JSON格式存储，记录每次提交的审批人，审批状态和审批意见）")
     private String approvalHistory;
 
-    // 在 DeviceApplicationFormDto.java 中添加以下字段
+    // 在 ApplicationFormDto.java 中添加以下字段
     @ApiModelProperty(value = "设备信息详情（JSON格式存储）")
-    private String deviceInfoDetails;
+    private String dataDetails;
 
     @ApiModelProperty(value = "createdAt")
     private Timestamp createdAt;

@@ -13,20 +13,18 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 */
-package me.zhengjie.gen.service.mapstruct;
+package me.zhengjie.gen.service.dto;
 
-import me.zhengjie.base.BaseMapper;
-import me.zhengjie.gen.domain.DeviceApplicationForm;
-import me.zhengjie.gen.service.dto.DeviceApplicationFormDto;
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import lombok.Data;
+import java.util.List;
+import me.zhengjie.annotation.Query;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
 * @website https://eladmin.vip
 * @author Chen Jiayuan
-* @date 2025-09-18
+* @date 2025-09-21
 **/
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface DeviceApplicationFormMapper extends BaseMapper<DeviceApplicationFormDto, DeviceApplicationForm> {
-
+@Data
+public class GatewayInfoQueryCriteria{
 }

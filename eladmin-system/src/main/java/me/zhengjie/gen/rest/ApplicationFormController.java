@@ -16,10 +16,10 @@
 package me.zhengjie.gen.rest;
 
 import me.zhengjie.annotation.Log;
-import me.zhengjie.gen.domain.DeviceApplicationForm;
-import me.zhengjie.gen.domain.vo.DeviceApplicationFormVo;
-import me.zhengjie.gen.service.DeviceApplicationFormService;
-import me.zhengjie.gen.service.dto.DeviceApplicationFormQueryCriteria;
+import me.zhengjie.gen.domain.ApplicationForm;
+import me.zhengjie.gen.domain.vo.ApplicationFormVo;
+import me.zhengjie.gen.service.ApplicationFormService;
+import me.zhengjie.gen.service.dto.ApplicationFormQueryCriteria;
 import me.zhengjie.gen.service.dto.PendingApprovalDto;
 import me.zhengjie.gen.service.dto.ApprovalRecordDto;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import me.zhengjie.utils.PageResult;
-import me.zhengjie.gen.service.dto.DeviceApplicationFormDto;
+import me.zhengjie.gen.service.dto.ApplicationFormDto;
 
 /**
  * @website https://eladmin.vip
@@ -44,60 +44,60 @@ import me.zhengjie.gen.service.dto.DeviceApplicationFormDto;
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "审核接口")
-@RequestMapping("/api/deviceApplicationForm")
-public class DeviceApplicationFormController {
+@RequestMapping("/api/applicationForm")
+public class ApplicationFormController {
 
-    private final DeviceApplicationFormService deviceApplicationFormService;
+    private final ApplicationFormService applicationFormService;
 
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    @PreAuthorize("@el.check('deviceApplicationForm:list')")
-    public void exportDeviceApplicationForm(HttpServletResponse response, DeviceApplicationFormQueryCriteria criteria) throws IOException {
-        deviceApplicationFormService.download(deviceApplicationFormService.queryAll(criteria), response);
+    @PreAuthorize("@el.check('applicationForm:list')")
+    public void exportApplicationForm(HttpServletResponse response, ApplicationFormQueryCriteria criteria) throws IOException {
+        applicationFormService.download(applicationFormService.queryAll(criteria), response);
     }
 
     @GetMapping
     @ApiOperation("查询审核接口")
-    @PreAuthorize("@el.check('deviceApplicationForm:list')")
-    public ResponseEntity<PageResult<DeviceApplicationFormDto>> queryDeviceApplicationForm(DeviceApplicationFormQueryCriteria criteria, Pageable pageable){
-        return new ResponseEntity<>(deviceApplicationFormService.queryAll(criteria,pageable),HttpStatus.OK);
+    @PreAuthorize("@el.check('applicationForm:list')")
+    public ResponseEntity<PageResult<ApplicationFormDto>> queryApplicationForm(ApplicationFormQueryCriteria criteria, Pageable pageable){
+        return new ResponseEntity<>(applicationFormService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
     @PostMapping
     @Log("新增审核接口")
     @ApiOperation("新增审核接口")
-    @PreAuthorize("@el.check('deviceApplicationForm:add')")
-    public ResponseEntity<Object> createDeviceApplicationForm(@Validated @RequestBody DeviceApplicationForm resources){
-        deviceApplicationFormService.create(resources);
+    @PreAuthorize("@el.check('applicationForm:add')")
+    public ResponseEntity<Object> createApplicationForm(@Validated @RequestBody ApplicationForm resources){
+        applicationFormService.create(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping
     @Log("修改审核接口")
     @ApiOperation("修改审核接口")
-    @PreAuthorize("@el.check('deviceApplicationForm:edit')")
-    public ResponseEntity<Object> updateDeviceApplicationForm(@Validated @RequestBody DeviceApplicationForm resources){
-        deviceApplicationFormService.update(resources);
+    @PreAuthorize("@el.check('applicationForm:edit')")
+    public ResponseEntity<Object> updateApplicationForm(@Validated @RequestBody ApplicationForm resources){
+        applicationFormService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping
     @Log("删除审核接口")
     @ApiOperation("删除审核接口")
-    @PreAuthorize("@el.check('deviceApplicationForm:del')")
-    public ResponseEntity<Object> deleteDeviceApplicationForm(@ApiParam(value = "传ID数组[]") @RequestBody Integer[] ids) {
-        deviceApplicationFormService.deleteAll(ids);
+    @PreAuthorize("@el.check('applicationForm:del')")
+    public ResponseEntity<Object> deleteApplicationForm(@ApiParam(value = "传ID数组[]") @RequestBody Integer[] ids) {
+        applicationFormService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/delete")
     @Log("删除申请单")
     @ApiOperation("删除申请单")
-    @PreAuthorize("@el.check('deviceApplicationForm:edit')")
+    @PreAuthorize("@el.check('applicationForm:edit')")
     public ResponseEntity<Object> deleteApplicationForm(
             @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId,
             @ApiParam(value = "申请人姓名") @RequestParam String applicantUserName) {
-        deviceApplicationFormService.deleteApplicationForm(applicationFormId, applicantUserName);
+        applicationFormService.deleteApplicationForm(applicationFormId, applicantUserName);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -105,32 +105,32 @@ public class DeviceApplicationFormController {
     @PostMapping("/submit")
     @Log("提交申请单")
     @ApiOperation("提交申请单（包括首次提交和重新提交）")
-    @PreAuthorize("@el.check('deviceApplicationForm:add') or @el.check('deviceApplicationForm:edit')")
-    public ResponseEntity<Object> submitApplication(@Validated @RequestBody DeviceApplicationFormVo resources){
-        deviceApplicationFormService.submitApplication(resources);
+    @PreAuthorize("@el.check('applicationForm:add') or @el.check('applicationForm:edit')")
+    public ResponseEntity<Object> submitApplication(@Validated @RequestBody ApplicationFormVo resources){
+        applicationFormService.submitApplication(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/pending-approvals")
     @ApiOperation("查询当前用户的待审批任务（分页）")
-    @PreAuthorize("@el.check('deviceApplicationForm:list')")
+    @PreAuthorize("@el.check('applicationForm:list')")
     public ResponseEntity<PageResult<PendingApprovalDto>> queryPendingApprovals(
-            DeviceApplicationFormQueryCriteria criteria,
+            ApplicationFormQueryCriteria criteria,
             Pageable pageable) {
-        PageResult<PendingApprovalDto> result = deviceApplicationFormService.getPendingApprovals(criteria, pageable);
+        PageResult<PendingApprovalDto> result = applicationFormService.getPendingApprovals(criteria, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
 
-    // 修改 DeviceApplicationFormController.java 中的 getApprovedApplications 方法
+    // 修改 ApplicationFormController.java 中的 getApprovedApplications 方法
     @GetMapping("/approved-applications")
     @ApiOperation("查询当前用户已审批的任务（分页）")
-    @PreAuthorize("@el.check('deviceApplicationForm:list')")
-    public ResponseEntity<PageResult<DeviceApplicationFormDto>> getApprovedApplications(
-            DeviceApplicationFormQueryCriteria criteria,
+    @PreAuthorize("@el.check('applicationForm:list')")
+    public ResponseEntity<PageResult<ApplicationFormDto>> getApprovedApplications(
+            ApplicationFormQueryCriteria criteria,
             Pageable pageable) {
-        PageResult<DeviceApplicationFormDto> result = deviceApplicationFormService.getApprovedApplications(criteria, pageable);
+        PageResult<ApplicationFormDto> result = applicationFormService.getApprovedApplications(criteria, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -138,43 +138,43 @@ public class DeviceApplicationFormController {
     @PostMapping("/approve")
     @Log("审批申请单")
     @ApiOperation("审批申请单")
-    @PreAuthorize("@el.check('deviceApplicationForm:approve')")
+    @PreAuthorize("@el.check('applicationForm:approve')")
     public ResponseEntity<Object> approveApplication(
             @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId,
             @ApiParam(value = "审批人姓名") @RequestParam String approverUserName,
             @ApiParam(value = "审批状态：1-通过，2-驳回") @RequestParam Integer approvalStatus,
             @ApiParam(value = "审批意见") @RequestParam(required = false) String comment){
-        deviceApplicationFormService.approveApplication(applicationFormId, approverUserName, approvalStatus, comment);
+        applicationFormService.approveApplication(applicationFormId, approverUserName, approvalStatus, comment);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/approval-history/{applicationFormId}")
     @ApiOperation("查询申请单的所有审批历史")
-    @PreAuthorize("@el.check('deviceApplicationForm:list')")
+    @PreAuthorize("@el.check('applicationForm:list')")
     public ResponseEntity<List<ApprovalRecordDto>> getApprovalHistory(
             @ApiParam(value = "申请单ID") @PathVariable Integer applicationFormId){
-        return new ResponseEntity<>(deviceApplicationFormService.getApprovalHistory(applicationFormId), HttpStatus.OK);
+        return new ResponseEntity<>(applicationFormService.getApprovalHistory(applicationFormId), HttpStatus.OK);
     }
 
-    // 在 DeviceApplicationFormController.java 中添加以下方法
+    // 在 ApplicationFormController.java 中添加以下方法
 
     @PostMapping("/save-draft")
     @Log("保存申请单草稿")
     @ApiOperation("保存申请单草稿")
-    @PreAuthorize("@el.check('deviceApplicationForm:add') or @el.check('deviceApplicationForm:edit')")
-    public ResponseEntity<Object> saveDraft(@Validated @RequestBody DeviceApplicationFormVo resources){
-        deviceApplicationFormService.saveDraft(resources);
+    @PreAuthorize("@el.check('applicationForm:add') or @el.check('applicationForm:edit')")
+    public ResponseEntity<Object> saveDraft(@Validated @RequestBody ApplicationFormVo resources){
+        applicationFormService.saveDraft(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/withdraw")
     @Log("撤回申请单")
     @ApiOperation("撤回申请单")
-    @PreAuthorize("@el.check('deviceApplicationForm:edit')")
+    @PreAuthorize("@el.check('applicationForm:edit')")
     public ResponseEntity<Object> withdrawApplication(
             @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId,
             @ApiParam(value = "申请人姓名") @RequestParam String applicantUserName) {
-        deviceApplicationFormService.withdrawApplication(applicationFormId, applicantUserName);
+        applicationFormService.withdrawApplication(applicationFormId, applicantUserName);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -182,30 +182,30 @@ public class DeviceApplicationFormController {
     @PostMapping("/manual-trigger-firmware")
     @Log("手动触发固件校验")
     @ApiOperation("手动触发固件校验")
-    @PreAuthorize("@el.check('deviceApplicationForm:manual')")
+    @PreAuthorize("@el.check('applicationForm:manual')")
     public ResponseEntity<Object> manualTriggerFirmwareVerify(
             @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId){
-        deviceApplicationFormService.manualTriggerFirmwareVerify(applicationFormId);
+        applicationFormService.manualTriggerFirmwareVerify(applicationFormId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/manual-trigger-sync")
     @Log("手动触发同步")
     @ApiOperation("手动触发同步")
-    @PreAuthorize("@el.check('deviceApplicationForm:manual')")
+    @PreAuthorize("@el.check('applicationForm:manual')")
     public ResponseEntity<Object> manualTriggerSync(
             @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId){
-        deviceApplicationFormService.manualTriggerSync(applicationFormId);
+        applicationFormService.manualTriggerSync(applicationFormId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/manual-complete-process")
     @Log("手动完成流程")
     @ApiOperation("手动完成流程")
-    @PreAuthorize("@el.check('deviceApplicationForm:manual')")
+    @PreAuthorize("@el.check('applicationForm:manual')")
     public ResponseEntity<Object> manualCompleteProcess(
             @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId){
-        deviceApplicationFormService.manualCompleteProcess(applicationFormId);
+        applicationFormService.manualCompleteProcess(applicationFormId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

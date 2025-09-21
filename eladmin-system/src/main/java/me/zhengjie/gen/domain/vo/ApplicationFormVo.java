@@ -15,7 +15,7 @@ import lombok.Data;
  * @since 2025/9/19
  */
 @Data
-public class DeviceApplicationFormVo {
+public class ApplicationFormVo {
 
     @ApiModelProperty("申请单ID,主键ID")
     private Integer id;
@@ -32,8 +32,10 @@ public class DeviceApplicationFormVo {
     @ApiModelProperty(value = "申请单类型：新增，修改，上线，下线")
     private Integer applicationType;
 
-    @ApiModelProperty(value = "申请单数据类型：omada，vigi，adblocking")
+    // 修改 ApplicationFormDto.java 中的 applicationDataType 字段注释
+    @ApiModelProperty(value = "申请单数据类型：1-deviceInfo，2-gatewayInfo")
     private Integer applicationDataType;
+
 
     @ApiModelProperty("研发接口人用户名")
     private String devContact;
@@ -50,6 +52,6 @@ public class DeviceApplicationFormVo {
     @ApiModelProperty("申请人用户名（当前登录用户）")
     private String applicantUserName;
 
-    @ApiModelProperty("设备详细信息（JSON格式字符串）")
-    private String deviceDetail;
+    @ApiModelProperty("数据详细信息（JSON格式字符串）")
+    private String dataDetails;
 }

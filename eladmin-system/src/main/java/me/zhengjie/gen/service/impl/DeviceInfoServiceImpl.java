@@ -17,7 +17,10 @@
 package me.zhengjie.gen.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.zhengjie.gen.domain.ApplicationForm;
 import me.zhengjie.gen.domain.DeviceInfo;
+import me.zhengjie.gen.domain.GatewayInfo;
+import me.zhengjie.gen.service.DataInfoService;
 import me.zhengjie.gen.service.dto.DeviceInfoDto;
 import me.zhengjie.utils.ValidationUtil;
 import me.zhengjie.utils.FileUtil;
@@ -58,28 +61,28 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public PageResult<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria, Pageable pageable){
-        Page<DeviceInfo> page = deviceInfoRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder),pageable);
+    public PageResult<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria, Pageable pageable) {
+        Page<DeviceInfo> page = deviceInfoRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
         return PageUtil.toPage(page.map(deviceInfoMapper::toDto));
     }
 
     @Override
-    public List<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria){
-        return deviceInfoMapper.toDto(deviceInfoRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder)));
+    public List<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria) {
+        return deviceInfoMapper.toDto(deviceInfoRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder)));
     }
 
     @Override
     @Transactional
     public DeviceInfoDto findById(Integer id) {
         DeviceInfo deviceInfo = deviceInfoRepository.findById(id).orElseGet(DeviceInfo::new);
-        ValidationUtil.isNull(deviceInfo.getId(),"DeviceInfo","id",id);
+        ValidationUtil.isNull(deviceInfo.getId(), "DeviceInfo", "id", id);
         return deviceInfoMapper.toDto(deviceInfo);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(DeviceInfo resources) {
-        if(deviceInfoRepository.existsByModel(resources.getModel())){
+        if (deviceInfoRepository.existsByModel(resources.getModel())) {
             throw new RuntimeException("设备型号已存在");
         }
         deviceInfoRepository.save(resources);
@@ -89,7 +92,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     @Transactional(rollbackFor = Exception.class)
     public void update(DeviceInfo resources) {
         DeviceInfo deviceInfo = deviceInfoRepository.findById(resources.getId()).orElseGet(DeviceInfo::new);
-        ValidationUtil.isNull( deviceInfo.getId(),"DeviceInfo","id",resources.getId());
+        ValidationUtil.isNull(deviceInfo.getId(), "DeviceInfo", "id", resources.getId());
         deviceInfo.copy(resources);
         deviceInfoRepository.save(deviceInfo);
     }
@@ -101,27 +104,27 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         }
     }
 
-// 修改 DeviceInfoServiceImpl.java 中的 download 方法
-@Override
-public void download(List<DeviceInfoDto> all, HttpServletResponse response) throws IOException {
-    List<Map<String, Object>> list = new ArrayList<>();
-    for (DeviceInfoDto deviceInfo : all) {
-        Map<String,Object> map = new LinkedHashMap<>();
-        map.put("设备型号", deviceInfo.getModel());
-        map.put("设备版本", deviceInfo.getModelVersion());
-        map.put("设备类型", deviceInfo.getModelType());
-        map.put("设备种类", deviceInfo.getType());
-        map.put("硬件版本", deviceInfo.getHwVersion());
-        map.put("模版版本", deviceInfo.getControllerVersion());
-        map.put("设备版本号", deviceInfo.getVersion());
-        map.put("收养报文", deviceInfo.getAdoptResp());
-        map.put("状态", deviceInfo.getStatus() == 1 ? "上线" : "下线");
-        map.put("创建时间", deviceInfo.getCreatedAt());
-        map.put("更新时间", deviceInfo.getUpdatedAt());
-        list.add(map);
+    // 修改 DeviceInfoServiceImpl.java 中的 download 方法
+    @Override
+    public void download(List<DeviceInfoDto> all, HttpServletResponse response) throws IOException {
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (DeviceInfoDto deviceInfo : all) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("设备型号", deviceInfo.getModel());
+            map.put("设备版本", deviceInfo.getModelVersion());
+            map.put("设备类型", deviceInfo.getModelType());
+            map.put("设备种类", deviceInfo.getType());
+            map.put("硬件版本", deviceInfo.getHwVersion());
+            map.put("模版版本", deviceInfo.getControllerVersion());
+            map.put("设备版本号", deviceInfo.getVersion());
+            map.put("收养报文", deviceInfo.getAdoptResp());
+            map.put("状态", deviceInfo.getStatus() == 1 ? "上线" : "下线");
+            map.put("创建时间", deviceInfo.getCreatedAt());
+            map.put("更新时间", deviceInfo.getUpdatedAt());
+            list.add(map);
+        }
+        FileUtil.downloadExcel(list, response);
     }
-    FileUtil.downloadExcel(list, response);
-}
 
 
     @Override
@@ -140,8 +143,9 @@ public void download(List<DeviceInfoDto> all, HttpServletResponse response) thro
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createNewDevice(DeviceInfo deviceInfo) {
-        if(deviceInfoRepository.existsByModel(deviceInfo.getModel())){
+    public void createFromJson(String dataDetails) {
+        DeviceInfo deviceInfo = parseDataDetails(dataDetails);
+        if (deviceInfoRepository.existsByModel(deviceInfo.getModel())) {
             throw new RuntimeException("设备型号已存在");
         }
 
@@ -155,7 +159,8 @@ public void download(List<DeviceInfoDto> all, HttpServletResponse response) thro
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateDevice(DeviceInfo deviceInfo) {
+    public void updateFromJson(String dataDetails) {
+        DeviceInfo deviceInfo = parseDataDetails(dataDetails);
         DeviceInfo existingDevice = deviceInfoRepository.findById(deviceInfo.getId())
                 .orElseThrow(() -> new RuntimeException("设备不存在"));
 
@@ -174,8 +179,8 @@ public void download(List<DeviceInfoDto> all, HttpServletResponse response) thro
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void setDeviceStatus(Integer deviceId, Integer status) {
-        DeviceInfo deviceInfo = deviceInfoRepository.findById(deviceId)
+    public void setDataStatus(Integer id, Integer status) {
+        DeviceInfo deviceInfo = deviceInfoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("设备不存在"));
 
         deviceInfo.setStatus(status);
@@ -183,45 +188,13 @@ public void download(List<DeviceInfoDto> all, HttpServletResponse response) thro
     }
 
     @Override
-    public DeviceInfo parseDeviceInfoDetails(String deviceInfoDetails) {
+    public DeviceInfo parseDataDetails(String dataDetails) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            // 将JSON字符串转换为Map对象，然后手动映射到DeviceInfo
-            Map<String, Object> deviceData = objectMapper.readValue(deviceInfoDetails, Map.class);
-
-            // 创建DeviceInfo对象并填充数据
-            DeviceInfo deviceInfo = new DeviceInfo();
-
-            // 手动映射字段
-            if (deviceData.containsKey("model")) {
-                deviceInfo.setModel((String) deviceData.get("model"));
-            }
-            if (deviceData.containsKey("modelVersion")) {
-                deviceInfo.setModelVersion((String) deviceData.get("modelVersion"));
-            }
-            if (deviceData.containsKey("modelType")) {
-                deviceInfo.setModelType((String) deviceData.get("modelType"));
-            }
-            if (deviceData.containsKey("type")) {
-                deviceInfo.setType((String) deviceData.get("type"));
-            }
-            if (deviceData.containsKey("hwVersion")) {
-                deviceInfo.setHwVersion((String) deviceData.get("hwVersion"));
-            }
-            if (deviceData.containsKey("controllerVersion")) {
-                deviceInfo.setControllerVersion((String) deviceData.get("controllerVersion"));
-            }
-            if (deviceData.containsKey("version")) {
-                deviceInfo.setVersion((String) deviceData.get("version"));
-            }
-            if (deviceData.containsKey("adoptResp")) {
-                deviceInfo.setAdoptResp((String) deviceData.get("adoptResp"));
-            }
-
-            return deviceInfo;
+            return objectMapper.readValue(dataDetails, DeviceInfo.class);
         } catch (Exception e) {
-            throw new RuntimeException("解析设备信息详情失败", e);
+            throw new RuntimeException("解析网关数据失败", e);
         }
     }
-
 }
+

@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @date 2025-09-18
  **/
 @Data
-public class DeviceApplicationFormQueryCriteria{
+public class ApplicationFormQueryCriteria {
 
     /** 模糊 */
     @Query(type = Query.Type.INNER_LIKE)

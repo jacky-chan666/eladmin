@@ -15,7 +15,7 @@
 */
 package me.zhengjie.gen.repository;
 
-import me.zhengjie.gen.domain.DeviceApplicationForm;
+import me.zhengjie.gen.domain.ApplicationForm;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -24,19 +24,19 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 * @author Chen Jiayuan
 * @date 2025-09-18
 **/
-public interface DeviceApplicationFormRepository extends JpaRepository<DeviceApplicationForm, Integer>, JpaSpecificationExecutor<DeviceApplicationForm> {
+public interface ApplicationFormRepository extends JpaRepository<ApplicationForm, Integer>, JpaSpecificationExecutor<ApplicationForm> {
     /**
     * 根据 ApplicantId 查询
     * @param uuid /
     * @return /
     */
-    DeviceApplicationForm findByUuid(String uuid);
+    ApplicationForm findByUuid(String uuid);
     /**
     * 根据 ApplicationDataId 查询
     * @param application_data_id /
     * @return /
     */
-    DeviceApplicationForm findByApplicationDataId(Integer application_data_id);
+    ApplicationForm findByApplicationDataId(Integer application_data_id);
 
 
 }

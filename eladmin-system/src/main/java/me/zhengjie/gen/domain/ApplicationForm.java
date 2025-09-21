@@ -33,8 +33,8 @@ import java.io.Serializable;
 **/
 @Entity
 @Data
-@Table(name="device_application_form")
-public class DeviceApplicationForm implements Serializable {
+@Table(name="application_form")
+public class ApplicationForm implements Serializable {
 
     // 状态常量定义
     public static final Integer STATUS_DRAFT = -1;        // 草稿
@@ -67,7 +67,6 @@ public class DeviceApplicationForm implements Serializable {
     private Integer id;
 
     @Column(name = "`uuid`",unique = true,nullable = false)
-    @NotBlank
     @ApiModelProperty(value = "申请单UUID")
     private String uuid;
 
@@ -89,10 +88,12 @@ public class DeviceApplicationForm implements Serializable {
     @ApiModelProperty(value = "申请单类型：新增，修改，上线，下线")
     private Integer applicationType;
 
+    // 修改 ApplicationForm.java 中的 applicationDataType 字段注释
     @Column(name = "`application_data_type`",nullable = false)
     @NotNull
-    @ApiModelProperty(value = "申请单数据类型：omada，vigi，adblocking")
+    @ApiModelProperty(value = "申请单数据类型：1-deviceInfo，2-gatewayInfo")
     private Integer applicationDataType;
+
 
     @Column(name = "`application_title`",nullable = false)
     @NotBlank
@@ -164,9 +165,9 @@ public class DeviceApplicationForm implements Serializable {
     @ApiModelProperty(value = "审核历史表（JSON格式存储，记录每次提交的审批人，审批状态和审批意见）")
     private String approvalHistory;
 
-    @Column(name = "`device_info_details`")
+    @Column(name = "`data_details`")
     @ApiModelProperty(value = "设备信息详情（JSON格式存储）")
-    private String deviceInfoDetails;
+    private String dataDetails;
 
     @Column(name = "`created_at`")
     @ApiModelProperty(value = "createdAt")
@@ -176,7 +177,7 @@ public class DeviceApplicationForm implements Serializable {
     @ApiModelProperty(value = "updatedAt")
     private Timestamp updatedAt;
 
-    public void copy(DeviceApplicationForm source){
+    public void copy(ApplicationForm source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }
 }
