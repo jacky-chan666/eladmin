@@ -342,7 +342,7 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
      * 将 VO 中的数据复制到 JPA Entity
      */
     private final ObjectMapper objectMapper = new ObjectMapper(); // Jackson
-    
+
     private void mapVoToEntity(ApplicationForm entity, ApplicationFormVo vo) {
         // 基础字段（标题、理由等）
         entity.setApplicationTitle(vo.getApplicationTitle());
@@ -353,10 +353,10 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         entity.setTestLeader(vo.getTestLeader());
         entity.setDevContact(vo.getDevContact());
         entity.setDevLeader(vo.getDevLeader());
-    
+
         // 申请人信息
         entity.setApplicantUserName(vo.getApplicantUserName());
-    
+
         // 根据数据类型存储不同的详细信息
         entity.setDataDetails(vo.getDataDetails());
     }
@@ -728,12 +728,12 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     public void ApplicationPostProcess(Integer applicationFormId) {
         ApplicationForm form = applicationFormRepository.findById(applicationFormId)
                 .orElseThrow(() -> new RuntimeException("申请单不存在"));
-    
+
         // 只有审批通过的申请单才能处理
         if (!form.getStatus().equals(ApplicationForm.STATUS_APPROVED)) {
             throw new RuntimeException("申请单未审批通过");
         }
-    
+
         // 根据申请数据类型处理不同类型的申请
         switch (form.getApplicationDataType()) {
             case 1:
@@ -747,16 +747,19 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     private void processApplicationData(ApplicationForm form, DataInfoService dataInfoService) {
         switch (form.getApplicationType()) {
             case ApplicationForm.APPLICATION_TYPE_ADD:    // 新增
-                    dataInfoService.createFromJson(form.getDataDetails());
+                Integer applicationDataId = dataInfoService.createFromJson(form.getDataDetails());
+                // 更新申请单的application_data_id
+                form.setApplicationDataId(applicationDataId);
+                applicationFormRepository.save(form);
                 break;
             case ApplicationForm.APPLICATION_TYPE_MODIFY: // 修改
-                    dataInfoService.updateFromJson(form.getDataDetails());
+                dataInfoService.updateFromJson(form.getDataDetails());
                 break;
             case ApplicationForm.APPLICATION_TYPE_ONLINE: // 上线
-                    dataInfoService.setDataStatus(form.getApplicationDataId(), GatewayInfo.STATUS_ONLINE);
+                dataInfoService.setDataStatus(form.getApplicationDataId(), GatewayInfo.STATUS_ONLINE);
                 break;
             case ApplicationForm.APPLICATION_TYPE_OFFLINE: // 下线
-                    dataInfoService.setDataStatus(form.getApplicationDataId(), GatewayInfo.STATUS_OFFLINE);
+                dataInfoService.setDataStatus(form.getApplicationDataId(), GatewayInfo.STATUS_OFFLINE);
                 break;
             default:
                 throw new RuntimeException("不支持的申请类型");

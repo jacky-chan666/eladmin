@@ -1,19 +1,19 @@
 // E:/User/desktop/tplink/JavaProjects/eladmin/eladmin-system/src/main/java/me/zhengjie/gen/service/impl/DeviceInfoServiceImpl.java
 /*
-*  Copyright 2019-2025 Zheng Jie
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*  http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*/
+ *  Copyright 2019-2025 Zheng Jie
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package me.zhengjie.gen.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,11 +47,11 @@ import java.util.stream.Collectors;
 import me.zhengjie.utils.PageResult;
 
 /**
-* @website https://eladmin.vip
-* @description 服务实现
-* @author chen jiayuan
-* @date 2025-09-16
-**/
+ * @website https://eladmin.vip
+ * @description 服务实现
+ * @author chen jiayuan
+ * @date 2025-09-16
+ **/
 @Service
 @RequiredArgsConstructor
 public class DeviceInfoServiceImpl implements DeviceInfoService {
@@ -143,7 +143,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createFromJson(String dataDetails) {
+    public Integer createFromJson(String dataDetails) {
         DeviceInfo deviceInfo = parseDataDetails(dataDetails);
         if (deviceInfoRepository.existsByModel(deviceInfo.getModel())) {
             throw new RuntimeException("设备型号已存在");
@@ -154,7 +154,8 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         deviceInfo.setUpdatedAt(now);
         deviceInfo.setStatus(DeviceInfo.STATUS_ONLINE);
 
-        deviceInfoRepository.save(deviceInfo);
+        DeviceInfo save = deviceInfoRepository.save(deviceInfo);
+        return save.getId();
     }
 
     @Override

@@ -93,7 +93,7 @@ public interface DataInfoService <T,D,C>{
      */
     List<T> searchActiveDevices(String keyword);
 
-    void createFromJson(String dataDetail);
+    Integer createFromJson(String dataDetail);
 
     void updateFromJson(String dataDetail);
 
