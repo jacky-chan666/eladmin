@@ -825,9 +825,11 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
             form = applicationFormRepository.findById(vo.getId())
                     .orElseThrow(() -> new RuntimeException("申请单不存在"));
 
-            // 只能更新草稿状态的申请单
-            if (!form.getStatus().equals(ApplicationForm.STATUS_DRAFT)) {
-                throw new RuntimeException("只能更新草稿状态的申请单");
+            // 只能更新草稿、已撤回、已驳回状态的申请单
+            if (!form.getStatus().equals(ApplicationForm.STATUS_DRAFT) && 
+                !form.getStatus().equals(ApplicationForm.STATUS_WITHDRAWN) && 
+                !form.getStatus().equals(ApplicationForm.STATUS_REJECTED)) {
+                throw new RuntimeException("只能更新草稿、已撤回、已驳回状态的申请单");
             }
         }
         form.setUpdatedAt(now);
