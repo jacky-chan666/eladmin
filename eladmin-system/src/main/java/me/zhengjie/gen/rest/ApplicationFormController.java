@@ -63,37 +63,12 @@ public class ApplicationFormController {
         return new ResponseEntity<>(applicationFormService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
-    @PostMapping
-    @Log("新增审核接口")
-    @ApiOperation("新增审核接口")
-    @PreAuthorize("@el.check('applicationForm:add')")
-    public ResponseEntity<Object> createApplicationForm(@Validated @RequestBody ApplicationForm resources){
-        applicationFormService.create(resources);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
 
-    @PutMapping
-    @Log("修改审核接口")
-    @ApiOperation("修改审核接口")
-    @PreAuthorize("@el.check('applicationForm:edit')")
-    public ResponseEntity<Object> updateApplicationForm(@Validated @RequestBody ApplicationForm resources){
-        applicationFormService.update(resources);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @DeleteMapping
-    @Log("删除审核接口")
-    @ApiOperation("删除审核接口")
-    @PreAuthorize("@el.check('applicationForm:del')")
-    public ResponseEntity<Object> deleteApplicationForm(@ApiParam(value = "传ID数组[]") @RequestBody Integer[] ids) {
-        applicationFormService.deleteAll(ids);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
     @PostMapping("/delete")
     @Log("删除申请单")
     @ApiOperation("删除申请单")
-    @PreAuthorize("@el.check('applicationForm:edit')")
+    @PreAuthorize("@el.check('applicationForm:list')")
     public ResponseEntity<Object> deleteApplicationForm(
             @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId,
             @ApiParam(value = "申请人姓名") @RequestParam String applicantUserName) {
@@ -105,7 +80,7 @@ public class ApplicationFormController {
     @PostMapping("/submit")
     @Log("提交申请单")
     @ApiOperation("提交申请单（包括首次提交和重新提交）")
-    @PreAuthorize("@el.check('applicationForm:add') or @el.check('applicationForm:edit')")
+    @PreAuthorize("@el.check('applicationForm:list')")
     public ResponseEntity<Object> submitApplication(@Validated @RequestBody ApplicationFormVo resources){
         applicationFormService.submitApplication(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -138,7 +113,7 @@ public class ApplicationFormController {
     @PostMapping("/approve")
     @Log("审批申请单")
     @ApiOperation("审批申请单")
-    @PreAuthorize("@el.check('applicationForm:approve')")
+    @PreAuthorize("@el.check('applicationForm:list')")
     public ResponseEntity<Object> approveApplication(
             @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId,
             @ApiParam(value = "审批人姓名") @RequestParam String approverUserName,
@@ -161,7 +136,7 @@ public class ApplicationFormController {
     @PostMapping("/save-draft")
     @Log("保存申请单草稿")
     @ApiOperation("保存申请单草稿")
-    @PreAuthorize("@el.check('applicationForm:add') or @el.check('applicationForm:edit')")
+    @PreAuthorize("@el.check('applicationForm:list') or @el.check('applicationForm:list')")
     public ResponseEntity<Object> saveDraft(@Validated @RequestBody ApplicationFormVo resources){
         applicationFormService.saveDraft(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -170,7 +145,7 @@ public class ApplicationFormController {
     @PostMapping("/withdraw")
     @Log("撤回申请单")
     @ApiOperation("撤回申请单")
-    @PreAuthorize("@el.check('applicationForm:edit')")
+    @PreAuthorize("@el.check('applicationForm:list')")
     public ResponseEntity<Object> withdrawApplication(
             @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId,
             @ApiParam(value = "申请人姓名") @RequestParam String applicantUserName) {

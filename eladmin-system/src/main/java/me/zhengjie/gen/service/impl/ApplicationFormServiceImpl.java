@@ -69,6 +69,7 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     private final DeviceInfoService deviceInfoService;
     private final GatewayInfoService gatewayInfoService;
 
+    // TODO 代码注释和代码规范，文件注释都要修改
     // 修改 ApplicationFormServiceImpl.java
     @Override
     public PageResult<ApplicationFormDto> queryAll(ApplicationFormQueryCriteria criteria, Pageable pageable) {
@@ -186,7 +187,7 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         if (applicationFormRepository.findByUuid(resources.getUuid()) != null) {
             throw new EntityExistException(ApplicationForm.class, "uuid", resources.getUuid());
         }
-        if (applicationFormRepository.findByApplicationDataId(resources.getApplicationDataId()) != null) {
+        if (resources.getApplicationDataId() != null && applicationFormRepository.findByApplicationDataId(resources.getApplicationDataId()) != null) {
             throw new EntityExistException(ApplicationForm.class, "application_data_id", resources.getApplicationDataId().toString());
         }
         applicationFormRepository.save(resources);
@@ -203,7 +204,7 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
             throw new EntityExistException(ApplicationForm.class, "uuid", resources.getUuid());
         }
         applicationForm1 = applicationFormRepository.findByApplicationDataId(resources.getApplicationDataId());
-        if (applicationForm1 != null && !applicationForm1.getId().equals(applicationForm.getId())) {
+        if (resources.getApplicationDataId() != null && applicationForm1 != null && !applicationForm1.getId().equals(applicationForm.getId())) {
             throw new EntityExistException(ApplicationForm.class, "application_data_id", resources.getApplicationDataId().toString());
         }
         applicationForm.copy(resources);
@@ -660,15 +661,18 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
                     form.setStatus(ApplicationForm.STATUS_APPROVED); // 审批通过状态
                     applicationFormRepository.save(form);
 
+                    // 清除当前审批状态转移记录表内容
+                    currentApprovalStatusRepository.deleteByApplicationFormIdAndRound(
+                            applicationFormId, currentStatus.getRound());
+
                     // 处理设备信息申请
                     ApplicationPostProcess(applicationFormId);
 
+                    // TODO 由于后面的流程会失败，通过后就应该立马保存状态并提交事务。每一步失败都应该提交状态，而不是回滚
                     // 开始自动处理流程（固件校验 -> 同步）
                     startAutoProcess(applicationFormId);
 
-                    // 清除当前审批状态
-                    currentApprovalStatusRepository.deleteByApplicationFormIdAndRound(
-                            applicationFormId, currentStatus.getRound());
+
                 }
             }
         }
@@ -750,7 +754,10 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
                 Integer applicationDataId = dataInfoService.createFromJson(form.getDataDetails());
                 // 更新申请单的application_data_id
                 form.setApplicationDataId(applicationDataId);
-                applicationFormRepository.save(form);
+                // 检查application_data_id是否已经存在，如果存在就不更新
+                if (applicationDataId != null && applicationFormRepository.findByApplicationDataId(applicationDataId) == null) {
+                    applicationFormRepository.save(form);
+                }
                 break;
             case ApplicationForm.APPLICATION_TYPE_MODIFY: // 修改
                 dataInfoService.updateFromJson(form.getDataDetails());
@@ -765,46 +772,6 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
                 throw new RuntimeException("不支持的申请类型");
         }
     }
-
-    // 统一处理设备信息和网关信息申请
-//    private void processApplicationData(ApplicationForm form) {
-//        boolean isGateway = form.getApplicationDataType() != null && form.getApplicationDataType() == 2;
-//
-//        switch (form.getApplicationType()) {
-//            case ApplicationForm.APPLICATION_TYPE_ADD:    // 新增
-//                if (isGateway) {
-//                    deviceInfoService.createFromJson(form.getDataDetails());
-//                } else {
-//                    gatewayInfoService.createFromJson(form.getDataDetails());
-//                }
-//                break;
-//            case ApplicationForm.APPLICATION_TYPE_MODIFY: // 修改
-//                if (isGateway) {
-//                    deviceInfoService.updateFromJson(form.getDataDetails());
-//                } else {
-//                    gatewayInfoService.updateFromJson(form.getDataDetails());
-//                }
-//                break;
-//            case ApplicationForm.APPLICATION_TYPE_ONLINE: // 上线
-//                if (isGateway) {
-//                    deviceInfoService.setDataStatus(form.getApplicationDataId(), DeviceInfo.STATUS_ONLINE);
-//                } else {
-//                    gatewayInfoService.setDataStatus(form.getApplicationDataId(), GatewayInfo.STATUS_ONLINE);
-//                }
-//                break;
-//            case ApplicationForm.APPLICATION_TYPE_OFFLINE: // 下线
-//                if (isGateway) {
-//                    deviceInfoService.setDataStatus(form.getApplicationDataId(), DeviceInfo.STATUS_OFFLINE);
-//                } else {
-//                    gatewayInfoService.setDataStatus(form.getApplicationDataId(), GatewayInfo.STATUS_OFFLINE);
-//                }
-//                break;
-//            default:
-//                throw new RuntimeException("不支持的申请类型");
-//        }
-//    }
-
-
 
 
     // 在 ApplicationFormServiceImpl.java 中添加以下方法

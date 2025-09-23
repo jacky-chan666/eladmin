@@ -145,9 +145,10 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     @Transactional(rollbackFor = Exception.class)
     public Integer createFromJson(String dataDetails) {
         DeviceInfo deviceInfo = parseDataDetails(dataDetails);
-        if (deviceInfoRepository.existsByModel(deviceInfo.getModel())) {
-            throw new RuntimeException("设备型号已存在");
-        }
+        // TODO 检查设备型号是否已存在,需要在前后端加上校验；前端输入的时候就应该校验，而不是审批通过时校验。
+//        if (deviceInfoRepository.existsByModel(deviceInfo.getModel())) {
+//            throw new RuntimeException("设备型号已存在");
+//        }
 
         Timestamp now = new Timestamp(System.currentTimeMillis());
         deviceInfo.setCreatedAt(now);

@@ -61,32 +61,6 @@ public class DeviceInfoController {
         return new ResponseEntity<>(deviceInfoService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
-    @PostMapping
-    @Log("新增设备信息")
-    @ApiOperation("新增设备信息")
-    @PreAuthorize("@el.check('deviceInfo:add')")
-    public ResponseEntity<Object> createDeviceInfo(@Validated @RequestBody DeviceInfo resources){
-        deviceInfoService.create(resources);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @PutMapping
-    @Log("修改设备信息")
-    @ApiOperation("修改设备信息")
-    @PreAuthorize("@el.check('deviceInfo:edit')")
-    public ResponseEntity<Object> updateDeviceInfo(@Validated @RequestBody DeviceInfo resources){
-        deviceInfoService.update(resources);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @DeleteMapping
-    @Log("删除设备信息")
-    @ApiOperation("删除设备信息")
-    @PreAuthorize("@el.check('deviceInfo:del')")
-    public ResponseEntity<Object> deleteDeviceInfo(@ApiParam(value = "传ID数组[]") @RequestBody Integer[] ids) {
-        deviceInfoService.deleteAll(ids);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
     @GetMapping("/active")
     @ApiOperation("查询所有上线的设备信息")

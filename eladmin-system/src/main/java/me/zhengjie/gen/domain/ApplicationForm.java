@@ -53,10 +53,10 @@ public class ApplicationForm implements Serializable {
     public static final Integer STATUS_WITHDRAWN = 12;    // 已撤回（新增状态）
 
     // 申请单类型常量
-     public static final int APPLICATION_TYPE_ADD = 0;
-     public static final int APPLICATION_TYPE_MODIFY = 1;
-     public static final int APPLICATION_TYPE_ONLINE = 2;
-     public static final int APPLICATION_TYPE_OFFLINE = 3;
+     public static final int APPLICATION_TYPE_ADD = 1;
+     public static final int APPLICATION_TYPE_MODIFY = 2;
+     public static final int APPLICATION_TYPE_ONLINE = 3;
+     public static final int APPLICATION_TYPE_OFFLINE = 4;
 
 
 

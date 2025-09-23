@@ -59,30 +59,4 @@ public class GatewayInfoController {
         return new ResponseEntity<>(gatewayInfoService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
-    @PostMapping
-    @Log("新增网关信息")
-    @ApiOperation("新增网关信息")
-    @PreAuthorize("@el.check('gatewayInfo:add')")
-    public ResponseEntity<Object> createGatewayInfo(@Validated @RequestBody GatewayInfo resources){
-        gatewayInfoService.create(resources);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @PutMapping
-    @Log("修改网关信息")
-    @ApiOperation("修改网关信息")
-    @PreAuthorize("@el.check('gatewayInfo:edit')")
-    public ResponseEntity<Object> updateGatewayInfo(@Validated @RequestBody GatewayInfo resources){
-        gatewayInfoService.update(resources);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @DeleteMapping
-    @Log("删除网关信息")
-    @ApiOperation("删除网关信息")
-    @PreAuthorize("@el.check('gatewayInfo:del')")
-    public ResponseEntity<Object> deleteGatewayInfo(@ApiParam(value = "传ID数组[]") @RequestBody Integer[] ids) {
-        gatewayInfoService.deleteAll(ids);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 }
