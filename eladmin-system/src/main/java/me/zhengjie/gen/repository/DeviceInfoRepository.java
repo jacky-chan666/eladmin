@@ -36,6 +36,6 @@ public interface DeviceInfoRepository extends JpaRepository<DeviceInfo, Integer>
 
     List<DeviceInfo> findByStatus(Integer status);
 
-    @Query("SELECT d FROM DeviceInfo d WHERE d.status = 1 AND (d.model LIKE %:keyword% OR d.type LIKE %:keyword%)")
+    @Query("SELECT d FROM DeviceInfo d WHERE d.status = 1 AND d.model LIKE %:keyword% ")
     List<DeviceInfo> findActiveDevicesByKeyword(@Param("keyword") String keyword);
 }

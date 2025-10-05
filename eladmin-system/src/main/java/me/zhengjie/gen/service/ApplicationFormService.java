@@ -142,12 +142,6 @@ public interface ApplicationFormService {
      */
     void manualTriggerSync(Integer applicationFormId);
 
-    /**
-     * 手动完成申请单流程
-     * @param applicationFormId 申请单ID
-     */
-    void manualCompleteProcess(Integer applicationFormId);
-
 
     PageResult<PendingApprovalDto> getPendingApprovals(ApplicationFormQueryCriteria criteria, Pageable pageable);
 

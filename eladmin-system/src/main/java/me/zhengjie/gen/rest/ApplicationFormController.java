@@ -22,7 +22,6 @@ import me.zhengjie.gen.service.ApplicationFormService;
 import me.zhengjie.gen.service.dto.ApplicationFormQueryCriteria;
 import me.zhengjie.gen.service.dto.PendingApprovalDto;
 import me.zhengjie.gen.service.dto.ApprovalRecordDto;
-//import me.zhengjie.gen.utils.ImageUrlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
@@ -60,8 +59,6 @@ public class ApplicationFormController {
     @Autowired
     private final ApplicationFormService applicationFormService;
 
-//    private ImageUrlService imageUrlService;
-
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('applicationForm:list')")
@@ -76,8 +73,6 @@ public class ApplicationFormController {
         return new ResponseEntity<>(applicationFormService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
-
-
     @PostMapping("/delete")
     @Log("删除申请单")
     @ApiOperation("删除申请单")
@@ -88,7 +83,6 @@ public class ApplicationFormController {
         applicationFormService.deleteApplicationForm(applicationFormId, applicantUserName);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
     @PostMapping("/submit")
     @Log("提交申请单")
@@ -109,9 +103,6 @@ public class ApplicationFormController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-
-
-    // 修改 ApplicationFormController.java 中的 getApprovedApplications 方法
     @GetMapping("/approved-applications")
     @ApiOperation("查询当前用户已审批的任务（分页）")
     @PreAuthorize("@el.check('applicationForm:list')")
@@ -121,7 +112,6 @@ public class ApplicationFormController {
         PageResult<ApplicationFormDto> result = applicationFormService.getApprovedApplications(criteria, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
 
     @PostMapping("/approve")
     @Log("审批申请单")
@@ -144,8 +134,6 @@ public class ApplicationFormController {
         return new ResponseEntity<>(applicationFormService.getApprovalHistory(applicationFormId), HttpStatus.OK);
     }
 
-    // 在 ApplicationFormController.java 中添加以下方法
-
     @PostMapping("/save-draft")
     @Log("保存申请单草稿")
     @ApiOperation("保存申请单草稿")
@@ -166,7 +154,6 @@ public class ApplicationFormController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @PostMapping("/manual-trigger-firmware")
     @Log("手动触发固件校验")
     @ApiOperation("手动触发固件校验")
@@ -186,63 +173,4 @@ public class ApplicationFormController {
         applicationFormService.manualTriggerSync(applicationFormId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    @PostMapping("/manual-complete-process")
-    @Log("手动完成流程")
-    @ApiOperation("手动完成流程")
-    @PreAuthorize("@el.check('applicationForm:manual')")
-    public ResponseEntity<Object> manualCompleteProcess(
-            @ApiParam(value = "申请单ID") @RequestParam Integer applicationFormId){
-        applicationFormService.manualCompleteProcess(applicationFormId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-
-
-//    @PostMapping("/upload")
-//    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
-//        try {
-//            // 调用服务层完成上传
-//            Map<String, String> result = imageUrlService.uploadAndGetUrl(file, "temp");
-//
-//            return ResponseEntity.ok(result);
-//
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-//        } catch (IOException e) {
-//            return ResponseEntity.status(500).body(Map.of("error", "文件上传失败: " + e.getMessage()));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body(Map.of("error", "服务器内部错误"));
-//        }
-//    }
-
-//    @PostMapping("/upload")
-//    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
-//        if (file.isEmpty()) {
-//            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "文件为空"));
-//        }
-//
-//        try {
-//            Path uploadPath = Paths.get("uploads/device-images/");
-//            if (!Files.exists(uploadPath)) {
-//                Files.createDirectories(uploadPath);
-//            }
-//
-//            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-//            Path filePath = uploadPath.resolve(fileName);
-//
-//            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//
-//            String url = "/uploads/device-images/" + fileName; // 前端静态资源映射路径
-//
-//            Map<String, String> result = new HashMap<>();
-//            result.put("url", url);
-//            return ResponseEntity.ok(result);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(500).body(Collections.singletonMap("error", "上传失败"));
-//        }
-//    }
-
 }

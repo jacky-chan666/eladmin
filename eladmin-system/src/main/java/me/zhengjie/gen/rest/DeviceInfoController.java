@@ -55,22 +55,9 @@ public class DeviceInfoController {
     }
 
     @GetMapping
-    @ApiOperation("查询设备信息")
+    @ApiOperation("查询设备信息（聚合详细信息）")
     @PreAuthorize("@el.check('deviceInfo:list')")
     public ResponseEntity<PageResult<DeviceInfoDto>> queryDeviceInfo(DeviceInfoQueryCriteria criteria, Pageable pageable){
-        return new ResponseEntity<>(deviceInfoService.queryAll(criteria,pageable),HttpStatus.OK);
-    }
-
-
-    @GetMapping("/active")
-    @ApiOperation("查询所有上线的设备信息")
-    public ResponseEntity<List<DeviceInfoDto>> getAllActiveDevices() {
-        return new ResponseEntity<>(deviceInfoService.getAllActiveDevices(), HttpStatus.OK);
-    }
-
-    @GetMapping("/active/search")
-    @ApiOperation("搜索上线的设备信息")
-    public ResponseEntity<List<DeviceInfoDto>> searchActiveDevices(@RequestParam String keyword) {
-        return new ResponseEntity<>(deviceInfoService.searchActiveDevices(keyword), HttpStatus.OK);
+        return new ResponseEntity<>(deviceInfoService.queryAllWithDetails(criteria, pageable), HttpStatus.OK);
     }
 }

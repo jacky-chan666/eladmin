@@ -108,4 +108,47 @@ public interface DeviceInfoService extends DataInfoService<DeviceInfoDto, Device
      */
     DeviceInfo parseDataDetails(String dataDetails);
 
+    /**
+     * 根据ID查询设备详细信息（展平所有数据）
+     * @param id ID
+     * @return DeviceInfoDto 包含展平的模板和镜像信息
+     */
+    DeviceInfoDto findDetailById(Integer id);
+
+    /**
+     * 查询所有上线的设备详细信息（展平所有数据）
+     * @return List<DeviceInfoDto> 包含展平的模板和镜像信息
+     */
+    List<DeviceInfoDto> getAllActiveDeviceDetails();
+
+    /**
+     * 根据关键字搜索上线的设备详细信息（展平所有数据）
+     * @param keyword 关键字
+     * @return List<DeviceInfoDto> 包含展平的模板和镜像信息
+     */
+    List<DeviceInfoDto> searchActiveDeviceDetails(String keyword);
+
+    /**
+     * 查询数据分页（聚合详细信息）
+     * @param criteria 条件
+     * @param pageable 分页参数
+     * @return PageResult<DeviceInfoDto> 包含聚合信息的设备详情
+     */
+    PageResult<DeviceInfoDto> queryAllWithDetails(DeviceInfoQueryCriteria criteria, Pageable pageable);
+
+    /**
+     * 查询所有数据不分页（聚合详细信息）
+     * @param criteria 条件参数
+     * @return List<DeviceInfoDto> 包含聚合信息的设备详情列表
+     */
+    List<DeviceInfoDto> queryAllWithDetails(DeviceInfoQueryCriteria criteria);
+
+    // 在 DeviceInfoService.java 中添加以下方法声明
+    /**
+     * 同步设备信息到远程服务
+     * @param deviceId 设备ID
+     * @param status 目标状态
+     */
+    void syncDeviceInfo(Integer deviceId, Integer status);
+
 }

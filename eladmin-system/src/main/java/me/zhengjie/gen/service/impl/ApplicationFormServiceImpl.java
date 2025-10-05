@@ -35,7 +35,11 @@ import me.zhengjie.gen.service.ApplicationFormService;
 import me.zhengjie.gen.service.dto.ApplicationFormDto;
 import me.zhengjie.gen.service.dto.ApplicationFormQueryCriteria;
 import me.zhengjie.gen.service.mapstruct.ApplicationFormMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,7 +53,10 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
+
 import me.zhengjie.utils.PageResult;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * @website https://eladmin.vip
@@ -68,6 +75,10 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     private final DeviceInfoRepository deviceInfoRepository;
     private final DeviceInfoService deviceInfoService;
     private final GatewayInfoService gatewayInfoService;
+
+    // 添加依赖注入
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     // TODO 代码注释和代码规范，文件注释都要修改
     // 修改 ApplicationFormServiceImpl.java
@@ -665,12 +676,19 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
                     currentApprovalStatusRepository.deleteByApplicationFormIdAndRound(
                             applicationFormId, currentStatus.getRound());
 
-                    // 处理设备信息申请
+                    // 处理设备信息申请，信息存储入本地
                     ApplicationPostProcess(applicationFormId);
 
                     // TODO 由于后面的流程会失败，通过后就应该立马保存状态并提交事务。每一步失败都应该提交状态，而不是回滚
-                    // 开始自动处理流程（固件校验 -> 同步）
-                    startAutoProcess(applicationFormId);
+                    // 启动新线程执行自动流程，不使用事务
+                    new Thread(() -> {
+                        try {
+                            startAutoProcess(applicationFormId);
+                        } catch (Exception e) {
+                            // 记录日志，不影响主流程
+                            // log.error("自动处理流程失败", e);
+                        }
+                    }).start();
 
 
                 }
@@ -854,20 +872,6 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         executeSync(form);
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void manualCompleteProcess(Integer applicationFormId) {
-        ApplicationForm form = applicationFormRepository.findById(applicationFormId)
-                .orElseThrow(() -> new RuntimeException("申请单不存在"));
-
-        // 检查是否可以手动完成流程
-        if (form.getStatus() != ApplicationForm.STATUS_AUTO_FAILED) {
-            throw new RuntimeException("当前状态不允许手动完成流程");
-        }
-
-        // 根据申请类型完成后续流程
-        completeProcessBasedOnType(form);
-    }
 
     // 固件校验预留方法
     private void executeFirmwareVerification(ApplicationForm form) {
@@ -893,21 +897,32 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         }
     }
 
-    // 同步预留方法
+    // 在 ApplicationFormServiceImpl.java 中修改 executeSync 方法
+    /**
+     * 同步预留方法
+     */
     private void executeSync(ApplicationForm form) {
-        // TODO: 实现同步逻辑
-        // 这里可以调用实际的同步服务
-
         try {
-            // 模拟同步过程
-            // syncService.sync(form, form.getApplicationType() == 2 || form.getApplicationType() == 0); // 上线/新增为上线同步，下线为下线同步
+            // 根据申请单数据类型执行不同的同步逻辑
+            if (form.getApplicationDataType().equals(1)) { // deviceInfo类型
+                // 调用设备信息服务的同步方法
+                deviceInfoService.syncDeviceInfo(
+                        form.getApplicationDataId(),
+                        form.getApplicationType() == ApplicationForm.APPLICATION_TYPE_ONLINE ?
+                                DeviceInfo.STATUS_ONLINE : DeviceInfo.STATUS_OFFLINE
+                );
 
-            // 同步成功后完成流程
-            form.setStatus(ApplicationForm.STATUS_COMPLETED);
-            applicationFormRepository.save(form);
-
-            // 更新设备信息状态
-            updateDeviceInfoStatus(form);
+                // 同步成功后完成流程
+                form.setStatus(ApplicationForm.STATUS_COMPLETED);
+                applicationFormRepository.save(form);
+            } else if (form.getApplicationDataType().equals(2)) { // gatewayInfo类型
+                // 保持原有的网关信息同步逻辑
+                // TODO: 实现网关信息同步逻辑
+                form.setStatus(ApplicationForm.STATUS_COMPLETED);
+                applicationFormRepository.save(form);
+            } else {
+                throw new RuntimeException("不支持的申请数据类型");
+            }
         } catch (Exception e) {
             // 同步失败
             form.setStatus(ApplicationForm.STATUS_SYNC_FAILED);
@@ -916,6 +931,8 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
             // log.error("同步失败", e);
         }
     }
+
+
 
     // 根据申请类型完成流程
     // 根据申请类型完成流程

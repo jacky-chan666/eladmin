@@ -41,16 +41,19 @@ public class ApplicationForm implements Serializable {
     public static final Integer STATUS_SUBMITTED = 0;     // 已提交（新增状态）
     public static final Integer STATUS_PENDING = 1;       // 待审批（原0改为1）
     public static final Integer STATUS_APPROVED = 2;      // 审批通过（原1改为2）
-    public static final Integer STATUS_FIRMWARE_VERIFY = 3; // 固件校验中（原2改为3）
-    public static final Integer STATUS_FIRMWARE_FAILED = 4; // 固件校验失败（原3改为4）
-    public static final Integer STATUS_SYNCING = 5;       // 同步中（原4改为5）
-    public static final Integer STATUS_SYNC_FAILED = 6;   // 同步失败（原5改为6）
-    public static final Integer STATUS_COMPLETED = 7;     // 已完成（原6改为7）
-    public static final Integer STATUS_REJECTED = 8;      // 已驳回（原7改为8）
-    public static final Integer STATUS_AUTO_PROCESSING = 9; // 自动处理中（原8改为9）
-    public static final Integer STATUS_AUTO_FAILED = 10;   // 自动处理失败（原9改为10）
-    public static final Integer STATUS_MANUAL_TRIGGERED = 11; // 手动触发（原10改为11）
-    public static final Integer STATUS_WITHDRAWN = 12;    // 已撤回（新增状态）
+    public static final Integer STATUS_COMPLETED = 3;
+    public static final Integer STATUS_FIRMWARE_VERIFY = 4; // 固件校验中（原2改为3）
+    public static final Integer STATUS_FIRMWARE_FAILED = 5; // 固件校验失败（原3改为4）
+    public static final Integer STATUS_GRAY_SYNCING = 6;       // 同步中（原4改为5）
+    public static final Integer STATUS_GRAY_SYNC_FAILED = 7;   // 同步失败（原5改为6）
+    public static final Integer STATUS_SYNCING = 8;       // 同步中（原4改为5）
+    public static final Integer STATUS_SYNC_FAILED = 9;   // 同步失败（原5改为6）    public static final Integer STATUS_COMPLETED = 7;     // 已完成（原6改为7）
+    public static final Integer STATUS_REJECTED = 10;      // 已驳回（原7改为8）
+    public static final Integer STATUS_AUTO_PROCESSING = 11; // 自动处理中（原8改为9）
+    public static final Integer STATUS_AUTO_FAILED = 12;   // 自动处理失败（原9改为10）
+    public static final Integer STATUS_MANUAL_TRIGGERED = 13; // 手动触发（原10改为11）
+    public static final Integer STATUS_WITHDRAWN = 14;    // 已撤回（新增状态）
+
 
     // 申请单类型常量
      public static final int APPLICATION_TYPE_ADD = 1;
