@@ -733,10 +733,11 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         ApplicationForm form = applicationFormRepository.findById(applicationFormId)
                 .orElseThrow(() -> new RuntimeException("申请单不存在"));
 
-        // 只有审批通过的申请单才能处理
-        if (!form.getStatus().equals(ApplicationForm.STATUS_APPROVED)) {
-            throw new RuntimeException("申请单未审批通过");
-        }
+        // TODO 测试用，暂时注释掉
+//        // 只有审批通过的申请单才能处理
+//        if (!form.getStatus().equals(ApplicationForm.STATUS_APPROVED)) {
+//            throw new RuntimeException("申请单未审批通过");
+//        }
 
         // 根据申请数据类型处理不同类型的申请
         switch (form.getApplicationDataType()) {
@@ -793,16 +794,20 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
                     .orElseThrow(() -> new RuntimeException("申请单不存在"));
 
             // 只能更新草稿、已撤回、已驳回状态的申请单
-            if (!form.getStatus().equals(ApplicationForm.STATUS_DRAFT) && 
-                !form.getStatus().equals(ApplicationForm.STATUS_WITHDRAWN) && 
-                !form.getStatus().equals(ApplicationForm.STATUS_REJECTED)) {
+            if (!form.getStatus().equals(ApplicationForm.STATUS_DRAFT) &&
+                    !form.getStatus().equals(ApplicationForm.STATUS_WITHDRAWN) &&
+                    !form.getStatus().equals(ApplicationForm.STATUS_REJECTED)) {
                 throw new RuntimeException("只能更新草稿、已撤回、已驳回状态的申请单");
             }
         }
+
         form.setUpdatedAt(now);
         // 映射VO到Entity
         mapVoToEntity(form, vo);
-        applicationFormRepository.save(form);
+        ApplicationForm save = applicationFormRepository.save(form);
+
+        // TODO 测试用，稍后要删除 处理设备信息申请
+        ApplicationPostProcess(save.getId());
     }
 
 

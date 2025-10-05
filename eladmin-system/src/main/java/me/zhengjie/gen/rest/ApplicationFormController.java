@@ -22,6 +22,8 @@ import me.zhengjie.gen.service.ApplicationFormService;
 import me.zhengjie.gen.service.dto.ApplicationFormQueryCriteria;
 import me.zhengjie.gen.service.dto.PendingApprovalDto;
 import me.zhengjie.gen.service.dto.ApprovalRecordDto;
+//import me.zhengjie.gen.utils.ImageUrlService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,10 +33,18 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import me.zhengjie.utils.PageResult;
 import me.zhengjie.gen.service.dto.ApplicationFormDto;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @website https://eladmin.vip
@@ -47,7 +57,10 @@ import me.zhengjie.gen.service.dto.ApplicationFormDto;
 @RequestMapping("/api/applicationForm")
 public class ApplicationFormController {
 
+    @Autowired
     private final ApplicationFormService applicationFormService;
+
+//    private ImageUrlService imageUrlService;
 
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
@@ -183,5 +196,53 @@ public class ApplicationFormController {
         applicationFormService.manualCompleteProcess(applicationFormId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
+
+//    @PostMapping("/upload")
+//    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+//        try {
+//            // 调用服务层完成上传
+//            Map<String, String> result = imageUrlService.uploadAndGetUrl(file, "temp");
+//
+//            return ResponseEntity.ok(result);
+//
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+//        } catch (IOException e) {
+//            return ResponseEntity.status(500).body(Map.of("error", "文件上传失败: " + e.getMessage()));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body(Map.of("error", "服务器内部错误"));
+//        }
+//    }
+
+//    @PostMapping("/upload")
+//    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+//        if (file.isEmpty()) {
+//            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "文件为空"));
+//        }
+//
+//        try {
+//            Path uploadPath = Paths.get("uploads/device-images/");
+//            if (!Files.exists(uploadPath)) {
+//                Files.createDirectories(uploadPath);
+//            }
+//
+//            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+//            Path filePath = uploadPath.resolve(fileName);
+//
+//            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//
+//            String url = "/uploads/device-images/" + fileName; // 前端静态资源映射路径
+//
+//            Map<String, String> result = new HashMap<>();
+//            result.put("url", url);
+//            return ResponseEntity.ok(result);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(500).body(Collections.singletonMap("error", "上传失败"));
+//        }
+//    }
 
 }

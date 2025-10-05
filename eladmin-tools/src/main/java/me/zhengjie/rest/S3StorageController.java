@@ -70,10 +70,12 @@ public class S3StorageController {
     @ApiOperation("上传文件")
     public ResponseEntity<Object> uploadS3Storage(@RequestParam MultipartFile file){
         S3Storage storage = s3StorageService.upload(file);
+        String url = s3StorageService.generatePresignedUrl(storage.getFilePath(),3600*24);
         Map<String,Object> map = new HashMap<>(3);
         map.put("id",storage.getId());
         map.put("errno",0);
-        map.put("data",new String[]{amzS3Config.getDomain() + "/" + storage.getFilePath()});
+        map.put("data",storage.getFilePath());
+        map.put("url",url);
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
 

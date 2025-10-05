@@ -1,18 +1,18 @@
 /*
-*  Copyright 2019-2025 Zheng Jie
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*  http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*/
+ *  Copyright 2019-2025 Zheng Jie
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package me.zhengjie.service;
 
 import me.zhengjie.domain.S3Storage;
@@ -26,39 +26,39 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* @description 服务接口
-* @author Zheng Jie
-* @date 2025-06-25
-**/
+ * @description 服务接口
+ * @author Zheng Jie
+ * @date 2025-06-25
+ **/
 public interface S3StorageService {
 
     /**
-    * 查询数据分页
-    * @param criteria 条件
-    * @param pageable 分页参数
-    * @return PageResult
-    */
+     * 查询数据分页
+     * @param criteria 条件
+     * @param pageable 分页参数
+     * @return PageResult
+     */
     PageResult<S3Storage> queryAll(S3StorageQueryCriteria criteria, Pageable pageable);
 
     /**
-    * 查询所有数据不分页
-    * @param criteria 条件参数
-    * @return List<S3StorageDto>
-    */
+     * 查询所有数据不分页
+     * @param criteria 条件参数
+     * @return List<S3StorageDto>
+     */
     List<S3Storage> queryAll(S3StorageQueryCriteria criteria);
 
     /**
-    * 多选删除
-    * @param ids /
-    */
+     * 多选删除
+     * @param ids /
+     */
     void deleteAll(List<Long> ids);
 
     /**
-    * 导出数据
-    * @param all 待导出的数据
-    * @param response /
-    * @throws IOException /
-    */
+     * 导出数据
+     * @param all 待导出的数据
+     * @param response /
+     * @throws IOException /
+     */
     void download(List<S3Storage> all, HttpServletResponse response) throws IOException;
 
     /**
@@ -80,4 +80,7 @@ public interface S3StorageService {
      * @return S3Storage 对象，包含文件存储信息
      */
     S3Storage getById(Long id);
+
+
+    String generatePresignedUrl(String filePath, long expireInSeconds);
 }

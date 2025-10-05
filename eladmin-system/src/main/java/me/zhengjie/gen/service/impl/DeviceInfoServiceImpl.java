@@ -16,6 +16,9 @@
  */
 package me.zhengjie.gen.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.zhengjie.gen.domain.ApplicationForm;
 import me.zhengjie.gen.domain.DeviceInfo;
@@ -165,19 +168,23 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         DeviceInfo deviceInfo = parseDataDetails(dataDetails);
         DeviceInfo existingDevice = deviceInfoRepository.findById(deviceInfo.getId())
                 .orElseThrow(() -> new RuntimeException("设备不存在"));
+        Integer id = existingDevice.getId();
+        Integer status = existingDevice.getStatus();
+        // 使用 Hutool 自动拷贝所有非 null 的字段
+        BeanUtil.copyProperties(deviceInfo, existingDevice, CopyOptions.create()
+//            .setIgnoreNullValue(true)  // 忽略 null 值，防止覆盖原有数据
+                        .setIgnoreError(true)      // 忽略 setter 异常（比如类型不匹配）
+        );
 
-        existingDevice.setModel(deviceInfo.getModel());
-        existingDevice.setModelVersion(deviceInfo.getModelVersion());
-        existingDevice.setModelType(deviceInfo.getModelType());
-        existingDevice.setType(deviceInfo.getType());
-        existingDevice.setHwVersion(deviceInfo.getHwVersion());
-        existingDevice.setControllerVersion(deviceInfo.getControllerVersion());
-        existingDevice.setVersion(deviceInfo.getVersion());
-        existingDevice.setAdoptResp(deviceInfo.getAdoptResp());
+        // 手动设置更新时间
         existingDevice.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        existingDevice.setId(id);
+        existingDevice.setStatus(status);
+
 
         deviceInfoRepository.save(existingDevice);
     }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -193,6 +200,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     public DeviceInfo parseDataDetails(String dataDetails) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             return objectMapper.readValue(dataDetails, DeviceInfo.class);
         } catch (Exception e) {
             throw new RuntimeException("解析网关数据失败", e);

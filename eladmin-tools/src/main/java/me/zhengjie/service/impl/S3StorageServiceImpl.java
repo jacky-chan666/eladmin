@@ -1,18 +1,18 @@
 /*
-*  Copyright 2019-2025 Zheng Jie
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*  http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*/
+ *  Copyright 2019-2025 Zheng Jie
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package me.zhengjie.service.impl;
 
 import cn.hutool.core.date.DateUtil;
@@ -41,12 +41,19 @@ import software.amazon.awssdk.services.s3.waiters.S3Waiter;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
-* @description 服务实现
-* @author Zheng Jie
-* @date 2025-06-25
-**/
+ * @description 服务实现
+ * @author Zheng Jie
+ * @date 2025-06-25
+ **/
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -261,4 +268,40 @@ public class S3StorageServiceImpl implements S3StorageService {
         }
         return true;
     }
+
+    @Override
+    public String generatePresignedUrl(String filePath, long expireInSeconds) {
+
+        String bucketName = amzS3Config.getDefaultBucket();
+
+
+        // 2. 创建 S3Presigner（必须显式创建并关闭）
+        try (S3Presigner presigner = S3Presigner.builder()
+                .region(s3Client.serviceClientConfiguration().region())
+                .credentialsProvider(s3Client.serviceClientConfiguration().credentialsProvider())
+                .build()) {
+
+            // 3. 构建 GetObject 请求
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(filePath)
+                    .build();
+
+            // 4. 构建预签名请求，设置签名有效期
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofSeconds(expireInSeconds))
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            // 5. 生成预签名 URL
+            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
+
+            return presignedRequest.url().toString();
+
+        } catch (S3Exception e) {
+            log.error("生成预签名 URL 失败: {}", e.awsErrorDetails().errorMessage(), e);
+            throw new BadRequestException("生成链接失败：" + e.getMessage());
+        }
+    }
+
 }
