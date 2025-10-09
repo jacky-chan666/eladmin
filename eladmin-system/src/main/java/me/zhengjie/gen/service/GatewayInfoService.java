@@ -56,23 +56,6 @@ public interface GatewayInfoService extends DataInfoService<GatewayInfoDto, Gate
      */
     GatewayInfoDto findById(Integer id);
 
-    /**
-     * 创建
-     * @param resources /
-     */
-    void create(GatewayInfo resources);
-
-    /**
-     * 编辑
-     * @param resources /
-     */
-    void update(GatewayInfo resources);
-
-    /**
-     * 多选删除
-     * @param ids /
-     */
-    void deleteAll(Integer[] ids);
 
     /**
      * 导出数据

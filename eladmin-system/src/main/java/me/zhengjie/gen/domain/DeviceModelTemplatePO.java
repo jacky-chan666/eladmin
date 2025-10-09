@@ -9,8 +9,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import me.zhengjie.gen.utils.GenericJsonConverter;
+import me.zhengjie.gen.utils.StringListConverter;
+import me.zhengjie.gen.utils.StringMapConverter;
+
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -46,9 +51,8 @@ public class DeviceModelTemplatePO {
     @Column(name = "min_controller_version")
     private String minControllerVersion;
 
-    @ElementCollection
-    @CollectionTable(name = "template_not_support_controller_versions", joinColumns = @JoinColumn(name = "template_id"))
-    @Column(name = "not_support_controller_version")
+    @Column(name = "not_support_controller_version", columnDefinition = "JSON")
+    @Convert(converter = StringListConverter.class)
     private List<String> notSupportControllerVersion;
 
     @Column(name = "type")
@@ -63,6 +67,8 @@ public class DeviceModelTemplatePO {
     @Column(name = "model_version")
     private String modelVersion;
 
-    @Column(name = "adopt_resp")
-    private String adoptResp;
+    @Column(name = "adopt_resp", columnDefinition = "JSON")
+    @Convert(converter = GenericJsonConverter.class)
+    private Map<String, Object> adoptResp; // 支持嵌套结构！
+
 }

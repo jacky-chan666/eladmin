@@ -38,8 +38,6 @@ import me.zhengjie.gen.service.mapstruct.ApplicationFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,8 +53,16 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import me.zhengjie.utils.PageResult;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+
+import static me.zhengjie.gen.domain.ApplicationForm.APPLICATION_DATATYPE_DEVICEINFO;
+import static me.zhengjie.gen.domain.ApplicationForm.APPLICATION_DATATYPE_GATEWAYINFO;
+import static me.zhengjie.gen.domain.ApplicationForm.APPLICATION_TYPE_ADD;
+import static me.zhengjie.gen.domain.ApplicationForm.APPLICATION_TYPE_EDIT;
+import static me.zhengjie.gen.domain.ApplicationForm.APPLICATION_TYPE_OFFLINE;
+import static me.zhengjie.gen.domain.ApplicationForm.APPLICATION_TYPE_ONLINE;
+import static me.zhengjie.gen.domain.ApprovalRecord.STATUS_APPROVED;
+import static me.zhengjie.gen.domain.ApprovalRecord.STATUS_PEDING;
+import static me.zhengjie.gen.domain.ApprovalRecord.STATUS_REJECTED;
 
 /**
  * @website https://eladmin.vip
@@ -734,9 +740,9 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
             dto.setApprovedAt(record.getApprovedAt());
 
             switch (record.getApprovalStatus()) {
-                case 0: dto.setApprovalStatusText("待审批"); break;
-                case 1: dto.setApprovalStatusText("通过"); break;
-                case 2: dto.setApprovalStatusText("驳回"); break;
+                case STATUS_PEDING: dto.setApprovalStatusText("待审批"); break;
+                case STATUS_APPROVED: dto.setApprovalStatusText("通过"); break;
+                case STATUS_REJECTED: dto.setApprovalStatusText("驳回"); break;
                 default: dto.setApprovalStatusText("未知");
             }
 
@@ -759,17 +765,17 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
 
         // 根据申请数据类型处理不同类型的申请
         switch (form.getApplicationDataType()) {
-            case 1:
+            case APPLICATION_DATATYPE_DEVICEINFO:
                 processApplicationData(form, deviceInfoService);
                 break;
-            case 2:
+            case APPLICATION_DATATYPE_GATEWAYINFO:
                 processApplicationData(form, gatewayInfoService);
                 break;
         }
     }
     private void processApplicationData(ApplicationForm form, DataInfoService dataInfoService) {
         switch (form.getApplicationType()) {
-            case ApplicationForm.APPLICATION_TYPE_ADD:    // 新增
+            case APPLICATION_TYPE_ADD:    // 新增
                 Integer applicationDataId = dataInfoService.createFromJson(form.getDataDetails());
                 // 更新申请单的application_data_id
                 form.setApplicationDataId(applicationDataId);
@@ -778,13 +784,13 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
                     applicationFormRepository.save(form);
                 }
                 break;
-            case ApplicationForm.APPLICATION_TYPE_MODIFY: // 修改
+            case APPLICATION_TYPE_EDIT: // 修改
                 dataInfoService.updateFromJson(form.getDataDetails());
                 break;
-            case ApplicationForm.APPLICATION_TYPE_ONLINE: // 上线
+            case APPLICATION_TYPE_ONLINE: // 上线
                 dataInfoService.setDataStatus(form.getApplicationDataId(), GatewayInfo.STATUS_ONLINE);
                 break;
-            case ApplicationForm.APPLICATION_TYPE_OFFLINE: // 下线
+            case APPLICATION_TYPE_OFFLINE: // 下线
                 dataInfoService.setDataStatus(form.getApplicationDataId(), GatewayInfo.STATUS_OFFLINE);
                 break;
             default:
@@ -825,7 +831,9 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         ApplicationForm save = applicationFormRepository.save(form);
 
         // TODO 测试用，稍后要删除 处理设备信息申请
+        // 存储到数据库
         ApplicationPostProcess(save.getId());
+        executeSync(save);
     }
 
 
@@ -904,18 +912,18 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     private void executeSync(ApplicationForm form) {
         try {
             // 根据申请单数据类型执行不同的同步逻辑
-            if (form.getApplicationDataType().equals(1)) { // deviceInfo类型
+            if (form.getApplicationDataType().equals(APPLICATION_DATATYPE_DEVICEINFO)) { // deviceInfo类型
                 // 调用设备信息服务的同步方法
                 deviceInfoService.syncDeviceInfo(
                         form.getApplicationDataId(),
-                        form.getApplicationType() == ApplicationForm.APPLICATION_TYPE_ONLINE ?
+                        form.getApplicationType() == APPLICATION_TYPE_ONLINE ?
                                 DeviceInfo.STATUS_ONLINE : DeviceInfo.STATUS_OFFLINE
                 );
 
                 // 同步成功后完成流程
                 form.setStatus(ApplicationForm.STATUS_COMPLETED);
                 applicationFormRepository.save(form);
-            } else if (form.getApplicationDataType().equals(2)) { // gatewayInfo类型
+            } else if (form.getApplicationDataType().equals(APPLICATION_DATATYPE_GATEWAYINFO)) { // gatewayInfo类型
                 // 保持原有的网关信息同步逻辑
                 // TODO: 实现网关信息同步逻辑
                 form.setStatus(ApplicationForm.STATUS_COMPLETED);
@@ -938,15 +946,15 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     // 根据申请类型完成流程
     private void completeProcessBasedOnType(ApplicationForm form) {
         switch (form.getApplicationType()) {
-            case 0: // 新增
-            case 1: // 修改
+            case APPLICATION_TYPE_ADD: // 新增
+            case APPLICATION_TYPE_EDIT: // 修改
                 // 新增和修改需要固件校验和同步
                 form.setStatus(ApplicationForm.STATUS_FIRMWARE_VERIFY);
                 applicationFormRepository.save(form);
                 executeFirmwareVerification(form);
                 break;
-            case 2: // 上线
-            case 3: // 下线
+            case APPLICATION_TYPE_ONLINE: // 上线
+            case APPLICATION_TYPE_OFFLINE: // 下线
                 // 上线和下线只需要同步
                 form.setStatus(ApplicationForm.STATUS_SYNCING);
                 applicationFormRepository.save(form);
@@ -961,9 +969,9 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     // 更新设备信息状态
     // 修改 ApplicationFormServiceImpl.java 中的 updateDeviceInfoStatus 方法
     private void updateDeviceInfoStatus(ApplicationForm form) {
-        if (form.getApplicationType().equals(ApplicationForm.APPLICATION_TYPE_ONLINE)) { // 上线申请
+        if (form.getApplicationType().equals(APPLICATION_TYPE_ONLINE)) { // 上线申请
             deviceInfoService.setDataStatus(form.getApplicationDataId(), DeviceInfo.STATUS_ONLINE); // 设置为上线
-        } else if (form.getApplicationType().equals(ApplicationForm.APPLICATION_TYPE_OFFLINE)) { // 下线申请
+        } else if (form.getApplicationType().equals(APPLICATION_TYPE_OFFLINE)) { // 下线申请
             deviceInfoService.setDataStatus(form.getApplicationDataId(), DeviceInfo.STATUS_OFFLINE); // 设置为下线
         }
         // 新增和修改申请默认已经是上线状态

@@ -1,18 +1,18 @@
 /*
-*  Copyright 2019-2025 Zheng Jie
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*  http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*/
+ *  Copyright 2019-2025 Zheng Jie
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package me.zhengjie.gen.domain;
 
 import lombok.Data;
@@ -26,11 +26,11 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
-* @website https://eladmin.vip
-* @description /
-* @author Chen Jiayuan
-* @date 2025-09-18
-**/
+ * @website https://eladmin.vip
+ * @description /
+ * @author Chen Jiayuan
+ * @date 2025-09-18
+ **/
 @Entity
 @Data
 @Table(name="application_form")
@@ -56,10 +56,16 @@ public class ApplicationForm implements Serializable {
 
 
     // 申请单类型常量
-     public static final int APPLICATION_TYPE_ADD = 1;
-     public static final int APPLICATION_TYPE_MODIFY = 2;
-     public static final int APPLICATION_TYPE_ONLINE = 3;
-     public static final int APPLICATION_TYPE_OFFLINE = 4;
+    public static final int APPLICATION_TYPE_ADD = 1;
+    public static final int APPLICATION_TYPE_EDIT = 2;
+    public static final int APPLICATION_TYPE_ONLINE = 3;
+    public static final int APPLICATION_TYPE_OFFLINE = 4;
+
+    // 申请单数据类型常量
+    public static final int APPLICATION_DATATYPE_DEVICEINFO = 1;
+    public static final int APPLICATION_DATATYPE_GATEWAYINFO = 2;
+
+
 
 
 

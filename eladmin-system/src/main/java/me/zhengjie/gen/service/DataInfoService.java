@@ -54,23 +54,6 @@ public interface DataInfoService <T,D,C>{
      */
     T findById(Integer id);
 
-    /**
-     * 创建
-     * @param resources /
-     */
-    void create(D resources);
-
-    /**
-     * 编辑
-     * @param resources /
-     */
-    void update(D resources);
-
-    /**
-     * 多选删除
-     * @param ids /
-     */
-    void deleteAll(Integer[] ids);
 
     /**
      * 导出数据
@@ -108,3 +91,4 @@ public interface DataInfoService <T,D,C>{
 
 }
 
+ 

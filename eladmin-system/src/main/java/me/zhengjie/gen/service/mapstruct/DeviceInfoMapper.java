@@ -1,26 +1,30 @@
 // DeviceInfoMapper.java
 /*
-*  Copyright 2019-2025 Zheng Jie
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*  http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*/
+ *  Copyright 2019-2025 Zheng Jie
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package me.zhengjie.gen.service.mapstruct;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import me.zhengjie.gen.service.dto.DeviceInfoDto;
 import me.zhengjie.base.BaseMapper;
 import me.zhengjie.gen.domain.DeviceInfo;
 import me.zhengjie.gen.domain.DeviceModelTemplatePO;
 import me.zhengjie.gen.domain.ImageInfoPO;
+import me.zhengjie.service.S3StorageService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -28,12 +32,13 @@ import org.mapstruct.ReportingPolicy;
 import java.util.Map;
 
 /**
-* @website https://eladmin.vip
-* @author chen jiayuan
-* @date 2025-09-16
-**/
+ * @website https://eladmin.vip
+ * @author chen jiayuan
+ * @date 2025-09-16
+ **/
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DeviceInfoMapper extends BaseMapper<DeviceInfoDto, DeviceInfo> {
+
 
     /**
      * 将 DeviceInfo、DeviceModelTemplatePO 和 ImageInfoPO 映射为 DeviceInfoDto
@@ -61,24 +66,31 @@ public interface DeviceInfoMapper extends BaseMapper<DeviceInfoDto, DeviceInfo> 
     @Mapping(source = "template.adoptResp", target = "adoptResp")
     // 映射镜像信息
     @Mapping(source = "imageInfo.imageName", target = "imageName")
-    @Mapping(source = "imageInfo.minControllerVersion", target = "imageMinControllerVersion")
-    @Mapping(source = "imageInfo.notSupportControllerVersion", target = "imageNotSupportControllerVersion")
     @Mapping(source = "imageInfo.imgBucketPathMap", target = "imgBucketPathMap")
     DeviceInfoDto toDto(DeviceInfo deviceInfo, DeviceModelTemplatePO template, ImageInfoPO imageInfo);
     // 添加一个辅助方法用于处理 imgBucketPathMap 的拆分映射
     default DeviceInfoDto toDtoWithImagePaths(DeviceInfo deviceInfo, DeviceModelTemplatePO template, ImageInfoPO imageInfo) {
         DeviceInfoDto dto = toDto(deviceInfo, template, imageInfo);
 
-        // 拆分 imgBucketPathMap 为四个独立字段
+        // 拆分 imgBucketPathMap 字符串并转为 Map，再提取四个字段
         if (imageInfo != null && imageInfo.getImgBucketPathMap() != null) {
             Map<String, String> imgBucketPathMap = imageInfo.getImgBucketPathMap();
-            dto.setSmallImgBucketPathForWeb(imgBucketPathMap.get("smallImgBucketPathForWeb"));
-            dto.setHeatmapImgBucketPathForWeb(imgBucketPathMap.get("heatmapImgBucketPathForWeb"));
-            dto.setBigImgBucketPathForWeb(imgBucketPathMap.get("bigImgBucketPathForWeb"));
-            dto.setHdpiImgBucketPathForApp(imgBucketPathMap.get("hdpiImgBucketPathForApp"));
+            String smallImgBucketPathForWeb = imgBucketPathMap.get("small_img_bucket_path_for_web");
+            String heatmapImgBucketPathForWeb = imgBucketPathMap.get("heatmap_img_bucket_path_for_web");
+            String bigImgBucketPathForWeb = imgBucketPathMap.get("big_img_bucket_path_for_web");
+            String hdpiImgBucketPathForApp = imgBucketPathMap.get("hdpi_img_bucket_path_for_app");
+
+            dto.setSmallImgBucketPathForWeb(smallImgBucketPathForWeb);
+            dto.setHeatmapImgBucketPathForWeb(heatmapImgBucketPathForWeb);
+            dto.setHdpiImgBucketPathForApp(hdpiImgBucketPathForApp);
+            dto.setBigImgBucketPathForWeb(bigImgBucketPathForWeb);
+
+            // 创建临时url返回前端
+            //generatePresignedUrl(smallImgBucketPathForWeb)
         }
 
         return dto;
     }
+
 
 }

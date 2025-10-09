@@ -79,35 +79,6 @@ public class GatewayInfoServiceImpl implements GatewayInfoService {
         return gatewayInfoMapper.toDto(gatewayInfo);
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void create(GatewayInfo resources) {
-        if(gatewayInfoRepository.findByModel(resources.getModel()) != null){
-            throw new EntityExistException(GatewayInfo.class,"model",resources.getModel());
-        }
-        gatewayInfoRepository.save(resources);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void update(GatewayInfo resources) {
-        GatewayInfo gatewayInfo = gatewayInfoRepository.findById(resources.getId()).orElseGet(GatewayInfo::new);
-        ValidationUtil.isNull( gatewayInfo.getId(),"GatewayInfo","id",resources.getId());
-        GatewayInfo gatewayInfo1 = null;
-        gatewayInfo1 = gatewayInfoRepository.findByModel(resources.getModel());
-        if(gatewayInfo1 != null && !gatewayInfo1.getId().equals(gatewayInfo.getId())){
-            throw new EntityExistException(GatewayInfo.class,"model",resources.getModel());
-        }
-        gatewayInfo.copy(resources);
-        gatewayInfoRepository.save(gatewayInfo);
-    }
-
-    @Override
-    public void deleteAll(Integer[] ids) {
-        for (Integer id : ids) {
-            gatewayInfoRepository.deleteById(id);
-        }
-    }
 
     @Override
     public void download(List<GatewayInfoDto> all, HttpServletResponse response) throws IOException {

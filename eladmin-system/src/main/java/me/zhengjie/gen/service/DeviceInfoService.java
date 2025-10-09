@@ -57,24 +57,6 @@ public interface DeviceInfoService extends DataInfoService<DeviceInfoDto, Device
     DeviceInfoDto findById(Integer id);
 
     /**
-     * 创建
-     * @param resources /
-     */
-    void create(DeviceInfo resources);
-
-    /**
-     * 编辑
-     * @param resources /
-     */
-    void update(DeviceInfo resources);
-
-    /**
-     * 多选删除
-     * @param ids /
-     */
-    void deleteAll(Integer[] ids);
-
-    /**
      * 导出数据
      * @param all 待导出的数据
      * @param response /
