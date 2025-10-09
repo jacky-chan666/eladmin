@@ -131,6 +131,7 @@ amz:
     # 访问的域名
     domain: https://aws.amazon.com
     # 账号的认证信息，或者子账号的认证信息
+
     # 存储桶（Bucket）
     defaultBucket: uat-omada-common-data-manager-storage-aps1
     # 文件存储路径

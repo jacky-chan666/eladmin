@@ -112,4 +112,7 @@ public class DeviceInfoDto implements Serializable {
 
     @ApiModelProperty(value = "app端图url")
     private String hdpiImgBucketUrlForApp;
+
+    @ApiModelProperty(value = "图url")
+    private Map<String, String> imageUrls;
 }

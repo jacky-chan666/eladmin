@@ -31,8 +31,8 @@ import me.zhengjie.gen.repository.DeviceModelTemplateRepository;
 import me.zhengjie.gen.repository.ImageInfoRepository;
 import me.zhengjie.gen.service.DataInfoService;
 import me.zhengjie.gen.service.dto.DeviceInfoDto;
-import me.zhengjie.utils.ValidationUtil;
-import me.zhengjie.utils.FileUtil;
+import me.zhengjie.service.S3StorageService;
+import me.zhengjie.utils.*;
 import lombok.RequiredArgsConstructor;
 import me.zhengjie.gen.repository.DeviceInfoRepository;
 import me.zhengjie.gen.service.DeviceInfoService;
@@ -42,8 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import me.zhengjie.utils.PageUtil;
-import me.zhengjie.utils.QueryHelp;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -52,7 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import me.zhengjie.utils.PageResult;
+
 import org.springframework.web.client.RestTemplate;
 // 在 ApplicationFormServiceImpl.java 中添加
 import org.springframework.web.client.RestTemplate;
@@ -74,6 +72,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     private final DeviceModelTemplateRepository deviceModelTemplateRepository; // 新增
     private final ImageInfoRepository imageInfoRepository; // 新增
     private final DeviceInfoMapper deviceInfoMapper;
+    private final S3StorageService s3StorageService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // 分隔符正则：支持中英文逗号、分号、竖线
@@ -508,9 +507,56 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
             imageInfo = imageInfoRepository.findById(deviceInfo.getImageInfoId()).orElse(null);
         }
 
-        return deviceInfoMapper.toDtoWithImagePaths(deviceInfo, template, imageInfo);
-    }
+        // 转换为 DTO
+        DeviceInfoDto dto = deviceInfoMapper.toDtoWithImagePaths(deviceInfo, template, imageInfo);
 
+        // 如果存在 imageInfo 且有 imgBucketPathMap，则获取预签名 URL
+        if (imageInfo != null && imageInfo.getImgBucketPathMap() != null) {
+            Map<String, String> imgBucketPathMap = imageInfo.getImgBucketPathMap();
+
+            String smallImgPath = imgBucketPathMap.get("small_img_bucket_path_for_web");
+            if (StringUtils.isNotBlank(smallImgPath)) {
+                try {
+                    String smallImgUrl = s3StorageService.generatePresignedUrl(smallImgPath, 3600);
+                    dto.setSmallImgBucketUrlForWeb(smallImgUrl); // 设置到预留字段
+                } catch (Exception e) {
+                    // 处理异常，但不中断流程
+                }
+            }
+
+            String bigImgPath = imgBucketPathMap.get("big_img_bucket_path_for_web");
+            if (StringUtils.isNotBlank(bigImgPath)) {
+                try {
+                    String bigImgUrl = s3StorageService.generatePresignedUrl(bigImgPath, 3600);
+                    dto.setBigImgBucketUrlForWeb(bigImgUrl); // 设置到预留字段
+                } catch (Exception e) {
+                    // 异常处理
+                }
+            }
+
+            String heatmapImgPath = imgBucketPathMap.get("heatmap_img_bucket_path_for_web");
+            if (StringUtils.isNotBlank(heatmapImgPath)) {
+                try {
+                    String heatmapImgUrl = s3StorageService.generatePresignedUrl(heatmapImgPath, 3600);
+                    dto.setHeatmapImgBucketUrlForWeb(heatmapImgUrl); // 设置到预留字段
+                } catch (Exception e) {
+                    // 异常处理
+                }
+            }
+
+            String hdpiImgPath = imgBucketPathMap.get("hdpi_img_bucket_path_for_app");
+            if (StringUtils.isNotBlank(hdpiImgPath)) {
+                try {
+                    String hdpiImgUrl = s3StorageService.generatePresignedUrl(hdpiImgPath, 3600);
+                    dto.setHdpiImgBucketUrlForApp(hdpiImgUrl); // 设置到预留字段
+                } catch (Exception e) {
+                    // 异常处理
+                }
+            }
+        }
+
+        return dto;
+    }
 
     @Override
     public PageResult<DeviceInfoDto> queryAllWithDetails(DeviceInfoQueryCriteria criteria, Pageable pageable) {
@@ -518,7 +564,6 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
 
         // 将每条记录转换为包含详细信息的 DTO
         Page<DeviceInfoDto> detailPage = page.map(deviceInfo -> {
-
             return convertToDetailDto(deviceInfo);
         });
 

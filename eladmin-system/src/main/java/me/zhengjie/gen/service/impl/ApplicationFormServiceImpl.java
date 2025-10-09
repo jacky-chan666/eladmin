@@ -27,8 +27,8 @@ import me.zhengjie.gen.service.DeviceInfoService;
 import me.zhengjie.gen.service.GatewayInfoService;
 import me.zhengjie.gen.service.dto.ApprovalRecordDto;
 import me.zhengjie.gen.service.dto.PendingApprovalDto;
-import me.zhengjie.utils.ValidationUtil;
-import me.zhengjie.utils.FileUtil;
+import me.zhengjie.service.S3StorageService;
+import me.zhengjie.utils.*;
 import lombok.RequiredArgsConstructor;
 import me.zhengjie.gen.repository.ApplicationFormRepository;
 import me.zhengjie.gen.service.ApplicationFormService;
@@ -41,8 +41,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import me.zhengjie.utils.PageUtil;
-import me.zhengjie.utils.QueryHelp;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -51,8 +49,6 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
-
-import me.zhengjie.utils.PageResult;
 
 import static me.zhengjie.gen.domain.ApplicationForm.APPLICATION_DATATYPE_DEVICEINFO;
 import static me.zhengjie.gen.domain.ApplicationForm.APPLICATION_DATATYPE_GATEWAYINFO;
@@ -81,6 +77,7 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     private final DeviceInfoRepository deviceInfoRepository;
     private final DeviceInfoService deviceInfoService;
     private final GatewayInfoService gatewayInfoService;
+    private final S3StorageService s3StorageService;
 
     // 添加依赖注入
     @Autowired
@@ -97,6 +94,8 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
             ApplicationFormDto dto = applicationFormMapper.toDto(applicationForm);
             // 添加审批信息
             enrichApprovalInfo(dto, applicationForm.getId());
+            // 添加图片预签名URL信息
+            enrichImageUrls(dto, applicationForm);
             return dto;
         });
 
@@ -112,6 +111,8 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
             ApplicationFormDto dto = applicationFormMapper.toDto(form);
             // 添加审批信息
             enrichApprovalInfo(dto, form.getId());
+            // 添加图片预签名URL信息到dataDetails中
+            enrichImageUrls(dto, form);
             return dto;
         }).collect(Collectors.toList());
     }
@@ -183,7 +184,92 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         }
     }
 
-    // 修改 ApplicationFormServiceImpl.java 中的 findById 方法
+    /**
+     * 丰富申请单的图片URL信息，直接在dataDetails中添加预签名URL
+     *
+     * @param dto 申请单 DTO
+     * @param applicationForm 申请单实体
+     */
+    private void enrichImageUrls(ApplicationFormDto dto, ApplicationForm applicationForm) {
+        try {
+            // 检查是否是设备信息类型的申请单
+            if (APPLICATION_DATATYPE_DEVICEINFO!=applicationForm.getApplicationDataType()) {
+                return;
+            }
+
+            // 解析 dataDetails JSON 字符串
+            String dataDetails = applicationForm.getDataDetails();
+            if (dataDetails == null || dataDetails.isEmpty()) {
+                return;
+            }
+
+            // 使用 ObjectMapper 解析 JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> dataMap = objectMapper.readValue(dataDetails, Map.class);
+
+            // 提取图片路径并生成预签名URL
+            boolean updated = false;
+
+            // 提取小图路径并生成预签名URL
+            String smallImgPath = (String) dataMap.get("smallImgBucketPathForWeb");
+            if (StringUtils.isNotBlank(smallImgPath)) {
+                try {
+                    String smallImgUrl = s3StorageService.generatePresignedUrl(smallImgPath, 3600); // 1小时有效期
+                    dataMap.put("smallImgUrl", smallImgUrl);
+                    updated = true;
+                } catch (Exception e) {
+                    // 记录日志但不中断流程
+                }
+            }
+
+            // 提取大图路径并生成预签名URL
+            String bigImgPath = (String) dataMap.get("bigImgBucketPathForWeb");
+            if (StringUtils.isNotBlank(bigImgPath)) {
+                try {
+                    String bigImgUrl = s3StorageService.generatePresignedUrl(bigImgPath, 3600);
+                    dataMap.put("bigImgUrl", bigImgUrl);
+                    updated = true;
+                } catch (Exception e) {
+                    // 记录日志但不中断流程
+                }
+            }
+
+            // 提取热力图路径并生成预签名URL
+            String heatmapImgPath = (String) dataMap.get("heatmapImgBucketPathForWeb");
+            if (StringUtils.isNotBlank(heatmapImgPath)) {
+                try {
+                    String heatmapImgUrl = s3StorageService.generatePresignedUrl(heatmapImgPath, 3600);
+                    dataMap.put("heatmapImgUrl", heatmapImgUrl);
+                    updated = true;
+                } catch (Exception e) {
+                    // 记录日志但不中断流程
+                }
+            }
+
+            // 提取高清图路径并生成预签名URL
+            String hdpiImgPath = (String) dataMap.get("hdpiImgBucketPathForApp");
+            if (StringUtils.isNotBlank(hdpiImgPath)) {
+                try {
+                    String hdpiImgUrl = s3StorageService.generatePresignedUrl(hdpiImgPath, 3600);
+                    dataMap.put("hdpiImgUrl", hdpiImgUrl);
+                    updated = true;
+                } catch (Exception e) {
+                    // 记录日志但不中断流程
+                }
+            }
+
+            // 如果有更新，则重新序列化 dataDetails
+            if (updated) {
+                String updatedDataDetails = objectMapper.writeValueAsString(dataMap);
+                dto.setDataDetails(updatedDataDetails);
+            }
+
+        } catch (Exception e) {
+            // 解析失败时记录日志但不中断流程
+        }
+    }
+
+
     @Override
     @Transactional
     public ApplicationFormDto findById(Integer id) {
@@ -196,6 +282,7 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
 
         return dto;
     }
+
 
 
     @Override
@@ -833,7 +920,7 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         // TODO 测试用，稍后要删除 处理设备信息申请
         // 存储到数据库
         ApplicationPostProcess(save.getId());
-        executeSync(save);
+        //executeSync(save);
     }
 
 
