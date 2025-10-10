@@ -140,26 +140,6 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     }
 
 
-    @Override
-    public PageResult<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria, Pageable pageable) {
-        Page<DeviceInfo> page = deviceInfoRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
-        return PageUtil.toPage(page.map(deviceInfoMapper::toDto));
-    }
-
-    @Override
-    public List<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria) {
-        return deviceInfoMapper.toDto(deviceInfoRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder)));
-    }
-
-    @Override
-    @Transactional
-    public DeviceInfoDto findById(Integer id) {
-        DeviceInfo deviceInfo = deviceInfoRepository.findById(id).orElseGet(DeviceInfo::new);
-        ValidationUtil.isNull(deviceInfo.getId(), "DeviceInfo", "id", id);
-        return deviceInfoMapper.toDto(deviceInfo);
-    }
-
-
     // 修改 DeviceInfoServiceImpl.java 中的 download 方法
     @Override
     public void download(List<DeviceInfoDto> all, HttpServletResponse response) throws IOException {
@@ -180,21 +160,6 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);
-    }
-
-
-    @Override
-    public List<DeviceInfoDto> getAllActiveDevices() {
-        return deviceInfoRepository.findByStatus(1).stream()
-                .map(deviceInfoMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<DeviceInfoDto> searchActiveDevices(String keyword) {
-        return deviceInfoRepository.findActiveDevicesByKeyword(keyword).stream()
-                .map(deviceInfoMapper::toDto)
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -229,8 +194,6 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
             deviceInfo.setCreatedAt(now);
             deviceInfo.setUpdatedAt(now);
             // deviceInfo.setStatus(DeviceInfo.STATUS_ONLINE);
-
-            // TODO 数据校验前端也要做！ 包括adot_resp，和 not support version
 
             // 假设 dataMap 是从某处获取的原始数据，其中 adoptResp 是一个 JSON 字符串
             String adoptRespStr = (String) dataMap.get("adoptResp");
@@ -303,7 +266,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateFromJson(String dataDetails) {
+    public void updateFromJson(String dataDetails,int deviceInfoId) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -312,8 +275,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
             Map<String, Object> dataMap = objectMapper.readValue(dataDetails, Map.class);
 
             // 获取设备基本信息
-            Integer deviceId = (Integer) dataMap.get("id");
-            DeviceInfo existingDevice = deviceInfoRepository.findById(deviceId)
+            DeviceInfo existingDevice = deviceInfoRepository.findById(deviceInfoId)
                     .orElseThrow(() -> new RuntimeException("设备不存在"));
 
             // 更新基本信息
@@ -416,13 +378,8 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
                 }
             }
 
-            Integer id = existingDevice.getId();
-            Integer status = existingDevice.getStatus();
-
             // 手动设置更新时间
             existingDevice.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-            existingDevice.setId(id);
-            existingDevice.setStatus(status);
 
             deviceInfoRepository.save(existingDevice);
 
@@ -473,24 +430,6 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         }
 
         return deviceInfoMapper.toDtoWithImagePaths(deviceInfo, template, imageInfo);
-    }
-
-
-
-    @Override
-    public List<DeviceInfoDto> getAllActiveDeviceDetails() {
-        List<DeviceInfo> deviceInfos = deviceInfoRepository.findByStatus(1);
-        return deviceInfos.stream()
-                .map(this::convertToDetailDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<DeviceInfoDto> searchActiveDeviceDetails(String keyword) {
-        List<DeviceInfo> deviceInfos = deviceInfoRepository.findActiveDevicesByKeyword(keyword);
-        return deviceInfos.stream()
-                .map(this::convertToDetailDto)
-                .collect(Collectors.toList());
     }
 
     private DeviceInfoDto convertToDetailDto(DeviceInfo deviceInfo) {

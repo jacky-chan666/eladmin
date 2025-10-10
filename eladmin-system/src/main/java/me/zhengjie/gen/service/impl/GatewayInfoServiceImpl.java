@@ -61,26 +61,6 @@ public class GatewayInfoServiceImpl implements GatewayInfoService {
     private final GatewayInfoMapper gatewayInfoMapper;
 
     @Override
-    public PageResult<GatewayInfoDto> queryAll(GatewayInfoQueryCriteria criteria, Pageable pageable){
-        Page<GatewayInfo> page = gatewayInfoRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder),pageable);
-        return PageUtil.toPage(page.map(gatewayInfoMapper::toDto));
-    }
-
-    @Override
-    public List<GatewayInfoDto> queryAll(GatewayInfoQueryCriteria criteria){
-        return gatewayInfoMapper.toDto(gatewayInfoRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder)));
-    }
-
-    @Override
-    @Transactional
-    public GatewayInfoDto findById(Integer id) {
-        GatewayInfo gatewayInfo = gatewayInfoRepository.findById(id).orElseGet(GatewayInfo::new);
-        ValidationUtil.isNull(gatewayInfo.getId(),"GatewayInfo","id",id);
-        return gatewayInfoMapper.toDto(gatewayInfo);
-    }
-
-
-    @Override
     public void download(List<GatewayInfoDto> all, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
         for (GatewayInfoDto gatewayInfo : all) {
@@ -123,7 +103,7 @@ public class GatewayInfoServiceImpl implements GatewayInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateFromJson(String dataDetail) {
+    public void updateFromJson(String dataDetail,int deviceInfoId) {
         GatewayInfo gatewayInfo = parseDataDetails(dataDetail);
         GatewayInfo existing = gatewayInfoRepository.findById(gatewayInfo.getId())
                 .orElseThrow(() -> new RuntimeException("网关信息不存在"));
@@ -160,19 +140,4 @@ public class GatewayInfoServiceImpl implements GatewayInfoService {
             throw new RuntimeException("解析网关数据失败", e);
         }
     }
-
-    @Override
-    public List<GatewayInfoDto> getAllActiveDevices() {
-        return gatewayInfoRepository.findByStatus(1).stream()
-                .map(gatewayInfoMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<GatewayInfoDto> searchActiveDevices(String keyword) {
-        return gatewayInfoRepository.findActiveDevicesByKeyword(keyword).stream()
-                .map(gatewayInfoMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
 }

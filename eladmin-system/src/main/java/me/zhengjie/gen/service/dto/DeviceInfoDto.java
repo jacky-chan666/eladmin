@@ -67,7 +67,7 @@ public class DeviceInfoDto implements Serializable {
     private String minControllerVersion;
 
     @ApiModelProperty(value = "模板不支持的控制器版本列表")
-    private List<String> notSupportControllerVersion;
+    private String notSupportControllerVersion;
 
     @ApiModelProperty(value = "模板类型")
     private String type;
@@ -79,7 +79,7 @@ public class DeviceInfoDto implements Serializable {
     private Boolean ippt;
 
     @ApiModelProperty(value = "模板收养报文")
-    private Map<String,Object> adoptResp;
+    private String adoptResp;
 
     // 从 ImageInfoPO 展平的字段
     @ApiModelProperty(value = "镜像名称")
@@ -112,7 +112,4 @@ public class DeviceInfoDto implements Serializable {
 
     @ApiModelProperty(value = "app端图url")
     private String hdpiImgBucketUrlForApp;
-
-    @ApiModelProperty(value = "图url")
-    private Map<String, String> imageUrls;
 }

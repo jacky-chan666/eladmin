@@ -1,19 +1,19 @@
 // E:/User/desktop/tplink/JavaProjects/eladmin/eladmin-system/src/main/java/me/zhengjie/gen/rest/DeviceInfoController.java
 /*
-*  Copyright 2019-2025 Zheng Jie
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*  http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*/
+ *  Copyright 2019-2025 Zheng Jie
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package me.zhengjie.gen.rest;
 
 import me.zhengjie.gen.service.dto.DeviceInfoDto;
@@ -35,10 +35,10 @@ import javax.servlet.http.HttpServletResponse;
 import me.zhengjie.utils.PageResult;
 
 /**
-* @website https://eladmin.vip
-* @author chen jiayuan
-* @date 2025-09-16
-**/
+ * @website https://eladmin.vip
+ * @author chen jiayuan
+ * @date 2025-09-16
+ **/
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "设备信息管理")
@@ -51,7 +51,7 @@ public class DeviceInfoController {
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('deviceInfo:list')")
     public void exportDeviceInfo(HttpServletResponse response, DeviceInfoQueryCriteria criteria) throws IOException {
-        deviceInfoService.download(deviceInfoService.queryAll(criteria), response);
+        deviceInfoService.download(deviceInfoService.queryAllWithDetails(criteria), response);
     }
 
     @GetMapping

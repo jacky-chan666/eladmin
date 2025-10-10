@@ -103,7 +103,6 @@ public class ApplicationForm implements Serializable {
     @ApiModelProperty(value = "申请单数据类型：1-deviceInfo，2-gatewayInfo")
     private Integer applicationDataType;
 
-
     @Column(name = "`application_title`",nullable = false)
     @NotBlank
     @ApiModelProperty(value = "申请单标题")
@@ -190,3 +189,4 @@ public class ApplicationForm implements Serializable {
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }
 }
+ 

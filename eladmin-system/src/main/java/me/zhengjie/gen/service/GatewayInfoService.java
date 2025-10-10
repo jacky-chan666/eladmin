@@ -34,28 +34,6 @@ import me.zhengjie.utils.PageResult;
  **/
 public interface GatewayInfoService extends DataInfoService<GatewayInfoDto, GatewayInfo, GatewayInfoQueryCriteria> {
 
-    /**
-     * 查询数据分页
-     * @param criteria 条件
-     * @param pageable 分页参数
-     * @return Map<String,Object>
-     */
-    PageResult<GatewayInfoDto> queryAll(GatewayInfoQueryCriteria criteria, Pageable pageable);
-
-    /**
-     * 查询所有数据不分页
-     * @param criteria 条件参数
-     * @return List<GatewayInfoDto>
-     */
-    List<GatewayInfoDto> queryAll(GatewayInfoQueryCriteria criteria);
-
-    /**
-     * 根据ID查询
-     * @param id ID
-     * @return GatewayInfoDto
-     */
-    GatewayInfoDto findById(Integer id);
-
 
     /**
      * 导出数据
@@ -67,7 +45,7 @@ public interface GatewayInfoService extends DataInfoService<GatewayInfoDto, Gate
 
     Integer createFromJson(String dataDetail);
 
-    void updateFromJson(String dataDetail);
+    void updateFromJson(String dataDetail,int deviceInfoId);
 
     void setDataStatus(Integer id, Integer status);
 

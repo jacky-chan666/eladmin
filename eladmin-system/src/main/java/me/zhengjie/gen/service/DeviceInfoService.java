@@ -34,27 +34,6 @@ import me.zhengjie.utils.PageResult;
  **/
 public interface DeviceInfoService extends DataInfoService<DeviceInfoDto, DeviceInfo, DeviceInfoQueryCriteria>{
 
-    /**
-     * 查询数据分页
-     * @param criteria 条件
-     * @param pageable 分页参数
-     * @return PageResult<DeviceInfoDto>
-     */
-    PageResult<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria, Pageable pageable);
-
-    /**
-     * 查询所有数据不分页
-     * @param criteria 条件参数
-     * @return List<DeviceInfoDto>
-     */
-    List<DeviceInfoDto> queryAll(DeviceInfoQueryCriteria criteria);
-
-    /**
-     * 根据ID查询
-     * @param id ID
-     * @return DeviceInfoDto
-     */
-    DeviceInfoDto findById(Integer id);
 
     /**
      * 导出数据
@@ -64,22 +43,9 @@ public interface DeviceInfoService extends DataInfoService<DeviceInfoDto, Device
      */
     void download(List<DeviceInfoDto> all, HttpServletResponse response) throws IOException;
 
-    /**
-     * 查询所有上线的设备
-     * @return List<DeviceInfoDto>
-     */
-    List<DeviceInfoDto> getAllActiveDevices();
-
-    /**
-     * 根据关键字搜索上线的设备
-     * @param keyword 关键字
-     * @return List<DeviceInfoDto>
-     */
-    List<DeviceInfoDto> searchActiveDevices(String keyword);
-
     Integer createFromJson(String dataDetail);
 
-    void updateFromJson(String dataDetail);
+    void updateFromJson(String dataDetail,int deviceInfoId);
 
     void setDataStatus(Integer id, Integer status);
 
@@ -96,19 +62,6 @@ public interface DeviceInfoService extends DataInfoService<DeviceInfoDto, Device
      * @return DeviceInfoDto 包含展平的模板和镜像信息
      */
     DeviceInfoDto findDetailById(Integer id);
-
-    /**
-     * 查询所有上线的设备详细信息（展平所有数据）
-     * @return List<DeviceInfoDto> 包含展平的模板和镜像信息
-     */
-    List<DeviceInfoDto> getAllActiveDeviceDetails();
-
-    /**
-     * 根据关键字搜索上线的设备详细信息（展平所有数据）
-     * @param keyword 关键字
-     * @return List<DeviceInfoDto> 包含展平的模板和镜像信息
-     */
-    List<DeviceInfoDto> searchActiveDeviceDetails(String keyword);
 
     /**
      * 查询数据分页（聚合详细信息）

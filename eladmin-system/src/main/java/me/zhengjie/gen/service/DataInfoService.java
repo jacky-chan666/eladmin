@@ -33,29 +33,6 @@ import me.zhengjie.utils.PageResult;
 public interface DataInfoService <T,D,C>{
 
     /**
-     * 查询数据分页
-     * @param criteria 条件
-     * @param pageable 分页参数
-     * @return PageResult<DeviceInfoDto>
-     */
-    PageResult<T> queryAll(C criteria, Pageable pageable);
-
-    /**
-     * 查询所有数据不分页
-     * @param criteria 条件参数
-     * @return List<DeviceInfoDto>
-     */
-    List<T> queryAll(C criteria);
-
-    /**
-     * 根据ID查询
-     * @param id ID
-     * @return DeviceInfoDto
-     */
-    T findById(Integer id);
-
-
-    /**
      * 导出数据
      * @param all 待导出的数据
      * @param response /
@@ -63,22 +40,9 @@ public interface DataInfoService <T,D,C>{
      */
     void download(List<T> all, HttpServletResponse response) throws IOException;
 
-    /**
-     * 查询所有上线的设备
-     * @return List<DeviceInfoDto>
-     */
-    List<T> getAllActiveDevices();
-
-    /**
-     * 根据关键字搜索上线的设备
-     * @param keyword 关键字
-     * @return List<DeviceInfoDto>
-     */
-    List<T> searchActiveDevices(String keyword);
-
     Integer createFromJson(String dataDetail);
 
-    void updateFromJson(String dataDetail);
+    void updateFromJson(String dataDetail,int deviceInfoId);
 
     void setDataStatus(Integer id, Integer status);
 
@@ -89,6 +53,4 @@ public interface DataInfoService <T,D,C>{
      */
     D parseDataDetails(String dataDetails);
 
-}
-
- 
+} 

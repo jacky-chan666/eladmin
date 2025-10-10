@@ -454,10 +454,12 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         entity.setApplicationReason(vo.getApplicationReason());
         entity.setApplicationType(vo.getApplicationType());
         entity.setApplicationDataType(vo.getApplicationDataType());
+        entity.setApplicationDataId(vo.getApplicationDataId());
         entity.setTestContact(vo.getTestContact());
         entity.setTestLeader(vo.getTestLeader());
         entity.setDevContact(vo.getDevContact());
         entity.setDevLeader(vo.getDevLeader());
+
 
         // 申请人信息
         entity.setApplicantUserName(vo.getApplicantUserName());
@@ -872,7 +874,7 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
                 }
                 break;
             case APPLICATION_TYPE_EDIT: // 修改
-                dataInfoService.updateFromJson(form.getDataDetails());
+                dataInfoService.updateFromJson(form.getDataDetails(),form.getApplicationDataId());
                 break;
             case APPLICATION_TYPE_ONLINE: // 上线
                 dataInfoService.setDataStatus(form.getApplicationDataId(), GatewayInfo.STATUS_ONLINE);

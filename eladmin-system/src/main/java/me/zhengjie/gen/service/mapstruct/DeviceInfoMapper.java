@@ -29,6 +29,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,13 +40,22 @@ import java.util.Map;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DeviceInfoMapper extends BaseMapper<DeviceInfoDto, DeviceInfo> {
 
+    /**
+     * 自定义转换方法：List<String> -> CSV String
+     */
+    default String listToString(List<String> list) {
+        return list != null && !list.isEmpty() ? String.join(",", list) : null;
+    }
 
     /**
-     * 将 DeviceInfo、DeviceModelTemplatePO 和 ImageInfoPO 映射为 DeviceInfoDto
-     * @param deviceInfo 设备信息
-     * @param template 设备模板信息
-     * @param imageInfo 镜像信息
-     * @return DeviceInfoDto
+     * 自定义转换方法：Map -> JSON String
+     */
+    default String mapToString(Map<String, Object> map) {
+        return map != null ? JSONUtil.toJsonStr(map) : null;
+    }
+
+    /**
+     * 主映射方法 —— 使用上面两个转换器自动处理类型不匹配
      */
     @Mapping(source = "deviceInfo.id", target = "id")
     @Mapping(source = "deviceInfo.model", target = "model")
@@ -59,38 +69,32 @@ public interface DeviceInfoMapper extends BaseMapper<DeviceInfoDto, DeviceInfo> 
     @Mapping(source = "template.version", target = "version")
     @Mapping(source = "template.controllerVersion", target = "controllerVersion")
     @Mapping(source = "template.minControllerVersion", target = "minControllerVersion")
-    @Mapping(source = "template.notSupportControllerVersion", target = "notSupportControllerVersion")
+    @Mapping(source = "template.notSupportControllerVersion", target = "notSupportControllerVersion") // List → String 自动调用 listToString
     @Mapping(source = "template.type", target = "type")
     @Mapping(source = "template.modelType", target = "modelType")
     @Mapping(source = "template.ippt", target = "ippt")
-    @Mapping(source = "template.adoptResp", target = "adoptResp")
+    @Mapping(source = "template.adoptResp", target = "adoptResp") // Map → String 自动调用 mapToString
     // 映射镜像信息
     @Mapping(source = "imageInfo.imageName", target = "imageName")
     @Mapping(source = "imageInfo.imgBucketPathMap", target = "imgBucketPathMap")
     DeviceInfoDto toDto(DeviceInfo deviceInfo, DeviceModelTemplatePO template, ImageInfoPO imageInfo);
-    // 添加一个辅助方法用于处理 imgBucketPathMap 的拆分映射
+
+    /**
+     * 辅助方法：完成主映射后，再拆分 imgBucketPathMap 字段
+     */
     default DeviceInfoDto toDtoWithImagePaths(DeviceInfo deviceInfo, DeviceModelTemplatePO template, ImageInfoPO imageInfo) {
         DeviceInfoDto dto = toDto(deviceInfo, template, imageInfo);
 
-        // 拆分 imgBucketPathMap 字符串并转为 Map，再提取四个字段
+        // 拆分 imgBucketPathMap 提取四个具体路径字段
         if (imageInfo != null && imageInfo.getImgBucketPathMap() != null) {
             Map<String, String> imgBucketPathMap = imageInfo.getImgBucketPathMap();
-            String smallImgBucketPathForWeb = imgBucketPathMap.get("small_img_bucket_path_for_web");
-            String heatmapImgBucketPathForWeb = imgBucketPathMap.get("heatmap_img_bucket_path_for_web");
-            String bigImgBucketPathForWeb = imgBucketPathMap.get("big_img_bucket_path_for_web");
-            String hdpiImgBucketPathForApp = imgBucketPathMap.get("hdpi_img_bucket_path_for_app");
-
-            dto.setSmallImgBucketPathForWeb(smallImgBucketPathForWeb);
-            dto.setHeatmapImgBucketPathForWeb(heatmapImgBucketPathForWeb);
-            dto.setHdpiImgBucketPathForApp(hdpiImgBucketPathForApp);
-            dto.setBigImgBucketPathForWeb(bigImgBucketPathForWeb);
-
-            // 创建临时url返回前端
-            //generatePresignedUrl(smallImgBucketPathForWeb)
+            dto.setSmallImgBucketPathForWeb(imgBucketPathMap.get("small_img_bucket_path_for_web"));
+            dto.setHeatmapImgBucketPathForWeb(imgBucketPathMap.get("heatmap_img_bucket_path_for_web"));
+            dto.setBigImgBucketPathForWeb(imgBucketPathMap.get("big_img_bucket_path_for_web"));
+            dto.setHdpiImgBucketPathForApp(imgBucketPathMap.get("hdpi_img_bucket_path_for_app"));
         }
 
         return dto;
     }
-
-
 }
+

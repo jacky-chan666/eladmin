@@ -32,10 +32,11 @@ public class ApplicationFormVo {
     @ApiModelProperty(value = "申请单类型：新增，修改，上线，下线")
     private Integer applicationType;
 
-    // 修改 ApplicationFormDto.java 中的 applicationDataType 字段注释
     @ApiModelProperty(value = "申请单数据类型：1-deviceInfo，2-gatewayInfo")
     private Integer applicationDataType;
 
+    @ApiModelProperty(value = "设备信息数据的id")
+    private Integer applicationDataId;
 
     @ApiModelProperty("研发接口人用户名")
     private String devContact;
