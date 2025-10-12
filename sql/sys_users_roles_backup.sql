@@ -22,12 +22,13 @@
 DROP TABLE IF EXISTS `sys_users_roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `sys_users_roles` (
-  `user_id` bigint NOT NULL COMMENT '用户ID',
-  `role_id` bigint NOT NULL COMMENT '角色ID',
-  PRIMARY KEY (`user_id`,`role_id`) USING BTREE,
-  KEY `idx_user_id` (`user_id`),
-  KEY `idx_role_id` (`role_id`)
+CREATE TABLE `sys_users_roles`
+(
+    `user_id` bigint NOT NULL COMMENT '用户ID',
+    `role_id` bigint NOT NULL COMMENT '角色ID',
+    PRIMARY KEY (`user_id`, `role_id`) USING BTREE,
+    KEY       `idx_user_id` (`user_id`),
+    KEY       `idx_role_id` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='用户角色关联';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -35,11 +36,27 @@ CREATE TABLE `sys_users_roles` (
 -- Dumping data for table `sys_users_roles`
 --
 
-LOCK TABLES `sys_users_roles` WRITE;
+LOCK
+TABLES `sys_users_roles` WRITE;
 /*!40000 ALTER TABLE `sys_users_roles` DISABLE KEYS */;
-INSERT INTO `sys_users_roles` VALUES (1,1),(2,2),(3,7),(4,4),(5,5),(6,6),(7,7),(8,3),(9,4),(10,5),(11,6),(12,7),(13,3),(14,3);
+INSERT INTO `sys_users_roles`
+VALUES (1, 1),
+       (2, 2),
+       (3, 7),
+       (4, 4),
+       (5, 5),
+       (6, 6),
+       (7, 7),
+       (8, 3),
+       (9, 4),
+       (10, 5),
+       (11, 6),
+       (12, 7),
+       (13, 3),
+       (14, 3);
 /*!40000 ALTER TABLE `sys_users_roles` ENABLE KEYS */;
-UNLOCK TABLES;
+UNLOCK
+TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

@@ -22,18 +22,19 @@
 DROP TABLE IF EXISTS `device_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `device_info` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `model` varchar(30) DEFAULT NULL,
-  `model_version` varchar(30) DEFAULT NULL,
-  `name` varchar(100) DEFAULT NULL COMMENT '设备名称',
-  `type` varchar(50) DEFAULT NULL COMMENT '设备类型',
-  `manufacturer` varchar(100) DEFAULT NULL COMMENT '制造商',
-  `specifications` text COMMENT '规格参数',
-  `status` tinyint DEFAULT '1' COMMENT '状态：0-下线，1-上线',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+CREATE TABLE `device_info`
+(
+    `id`             int NOT NULL AUTO_INCREMENT,
+    `model`          varchar(30)  DEFAULT NULL,
+    `model_version`  varchar(30)  DEFAULT NULL,
+    `name`           varchar(100) DEFAULT NULL COMMENT '设备名称',
+    `type`           varchar(50)  DEFAULT NULL COMMENT '设备类型',
+    `manufacturer`   varchar(100) DEFAULT NULL COMMENT '制造商',
+    `specifications` text COMMENT '规格参数',
+    `status`         tinyint      DEFAULT '1' COMMENT '状态：0-下线，1-上线',
+    `created_at`     timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`     timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='设备数据';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -41,11 +42,20 @@ CREATE TABLE `device_info` (
 -- Dumping data for table `device_info`
 --
 
-LOCK TABLES `device_info` WRITE;
+LOCK
+TABLES `device_info` WRITE;
 /*!40000 ALTER TABLE `device_info` DISABLE KEYS */;
-INSERT INTO `device_info` VALUES (1,'X1','V1.0',NULL,NULL,NULL,NULL,1,'2025-09-18 16:03:46','2025-09-18 16:03:46'),(2,'X2','V1.0',NULL,NULL,NULL,NULL,1,'2025-09-18 16:03:46','2025-09-18 16:03:46'),(3,'X3','V1.0',NULL,NULL,NULL,NULL,1,'2025-09-18 16:03:46','2025-09-18 16:03:46'),(4,'X4','V1.1',NULL,NULL,NULL,NULL,1,'2025-09-18 16:03:46','2025-09-18 16:03:46'),(5,'X5','V3.0',NULL,NULL,NULL,NULL,1,'2025-09-18 16:03:46','2025-09-18 16:03:46'),(7,'2','3',NULL,NULL,NULL,NULL,1,'2025-09-18 16:03:46','2025-09-18 16:03:46'),(8,'2','4.2.1',NULL,NULL,NULL,NULL,1,'2025-09-18 16:03:46','2025-09-18 16:03:46');
+INSERT INTO `device_info`
+VALUES (1, 'X1', 'V1.0', NULL, NULL, NULL, NULL, 1, '2025-09-18 16:03:46', '2025-09-18 16:03:46'),
+       (2, 'X2', 'V1.0', NULL, NULL, NULL, NULL, 1, '2025-09-18 16:03:46', '2025-09-18 16:03:46'),
+       (3, 'X3', 'V1.0', NULL, NULL, NULL, NULL, 1, '2025-09-18 16:03:46', '2025-09-18 16:03:46'),
+       (4, 'X4', 'V1.1', NULL, NULL, NULL, NULL, 1, '2025-09-18 16:03:46', '2025-09-18 16:03:46'),
+       (5, 'X5', 'V3.0', NULL, NULL, NULL, NULL, 1, '2025-09-18 16:03:46', '2025-09-18 16:03:46'),
+       (7, '2', '3', NULL, NULL, NULL, NULL, 1, '2025-09-18 16:03:46', '2025-09-18 16:03:46'),
+       (8, '2', '4.2.1', NULL, NULL, NULL, NULL, 1, '2025-09-18 16:03:46', '2025-09-18 16:03:46');
 /*!40000 ALTER TABLE `device_info` ENABLE KEYS */;
-UNLOCK TABLES;
+UNLOCK
+TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

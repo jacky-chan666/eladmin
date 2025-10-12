@@ -4,5 +4,4 @@ create table device_info
         primary key,
     model         varchar(30) null,
     model_version varchar(30) null
-)
-    comment '设备数据';
+) comment '设备数据';
