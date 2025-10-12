@@ -3,10 +3,10 @@
  */
 package com.tplink.smb.common.data.management.system.gen.service.dto;
 
-import lombok.Data;
-import java.sql.Timestamp;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModelProperty;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import lombok.Data;
 
 /**
  * @author Chen Jiayuan
@@ -34,7 +34,6 @@ public class ApplicationFormDto implements Serializable {
   @ApiModelProperty(value = "申请单类型：新增，修改，上线，下线")
   private Integer applicationType;
 
-  // 修改 ApplicationFormDto.java 中的 applicationDataType 字段注释
   @ApiModelProperty(value = "申请单数据类型：1-deviceInfo，2-gatewayInfo")
   private Integer applicationDataType;
 
@@ -44,50 +43,92 @@ public class ApplicationFormDto implements Serializable {
   @ApiModelProperty(value = "申请理由")
   private String applicationReason;
 
+  @ApiModelProperty(value = "审批轮次")
+  private Integer round;
+
   @ApiModelProperty(value = "申请状态")
   private Integer status;
 
-  @ApiModelProperty(value = "测试接口人")
-  private String testContact;
+  // 删除原有的审批人字段，新增6个审批人字段
+  @ApiModelProperty(value = "审批人1")
+  private String approver1;
 
-  @ApiModelProperty(value = "测试组长")
-  private String testLeader;
+  @ApiModelProperty(value = "审批人1层级")
+  private Integer approver1Level;
 
-  @ApiModelProperty(value = "研发接口人")
-  private String devContact;
+  @ApiModelProperty(value = "审批人2")
+  private String approver2;
 
-  @ApiModelProperty(value = "研发组长")
-  private String devLeader;
+  @ApiModelProperty(value = "审批人2层级")
+  private Integer approver2Level;
 
-  @ApiModelProperty(value = "测试接口人审批状态")
-  private Integer testContactApproval;
+  @ApiModelProperty(value = "审批人3")
+  private String approver3;
 
-  @ApiModelProperty(value = "测试组长审批状态")
-  private Integer testLeaderApproval;
+  @ApiModelProperty(value = "审批人3层级")
+  private Integer approver3Level;
 
-  @ApiModelProperty(value = "研发接口人审批状态")
-  private Integer devContactApproval;
+  @ApiModelProperty(value = "审批人4")
+  private String approver4;
 
-  @ApiModelProperty(value = "研发组长审批状态")
-  private Integer devLeaderApproval;
+  @ApiModelProperty(value = "审批人4层级")
+  private Integer approver4Level;
 
-  @ApiModelProperty(value = "测试接口人审批意见")
-  private String testContactComment;
+  @ApiModelProperty(value = "审批人5")
+  private String approver5;
 
-  @ApiModelProperty(value = "测试组长审批意见")
-  private String testLeaderComment;
+  @ApiModelProperty(value = "审批人5层级")
+  private Integer approver5Level;
 
-  @ApiModelProperty(value = "研发接口人审批意见")
-  private String devContactComment;
+  @ApiModelProperty(value = "审批人6")
+  private String approver6;
 
-  @ApiModelProperty(value = "研发组长意见审批")
-  private String devLeaderComment;
+  @ApiModelProperty(value = "审批人6层级")
+  private Integer approver6Level;
 
+  // 为每个审批人添加状态和意见字段
+  @ApiModelProperty(value = "审批人1状态")
+  private Integer approver1Status;
+
+  @ApiModelProperty(value = "审批人1意见")
+  private String approver1Comment;
+
+  @ApiModelProperty(value = "审批人2状态")
+  private Integer approver2Status;
+
+  @ApiModelProperty(value = "审批人2意见")
+  private String approver2Comment;
+
+  @ApiModelProperty(value = "审批人3状态")
+  private Integer approver3Status;
+
+  @ApiModelProperty(value = "审批人3意见")
+  private String approver3Comment;
+
+  @ApiModelProperty(value = "审批人4状态")
+  private Integer approver4Status;
+
+  @ApiModelProperty(value = "审批人4意见")
+  private String approver4Comment;
+
+  @ApiModelProperty(value = "审批人5状态")
+  private Integer approver5Status;
+
+  @ApiModelProperty(value = "审批人5意见")
+  private String approver5Comment;
+
+  @ApiModelProperty(value = "审批人6状态")
+  private Integer approver6Status;
+
+  @ApiModelProperty(value = "审批人6意见")
+  private String approver6Comment;
+
+  // DTO中保留这两个字段用于前端展示，但不在实体中存储
   @ApiModelProperty(value = "当前审核人列表（JSON格式存储）")
   private String currentApprovers;
 
-  @ApiModelProperty(value = "审核历史表（JSON格式存储，记录每次提交的审批人，审批状态和审批意见）")
-  private String approvalHistory;
+  @ApiModelProperty(value = "审批记录（JSON格式存储）")
+  private String approvalRecords;
 
   // 在 ApplicationFormDto.java 中添加以下字段
   @ApiModelProperty(value = "设备信息详情（JSON格式存储）")

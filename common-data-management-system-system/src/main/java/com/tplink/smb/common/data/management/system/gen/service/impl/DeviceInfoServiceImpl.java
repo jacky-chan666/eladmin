@@ -8,6 +8,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tplink.smb.common.data.management.system.gen.domain.*;
 import com.tplink.smb.common.data.management.system.gen.domain.DeviceInfo;
 import com.tplink.smb.common.data.management.system.gen.domain.DeviceModelTemplatePO;
 import com.tplink.smb.common.data.management.system.gen.domain.ImageInfoPO;
@@ -23,25 +24,22 @@ import com.tplink.smb.common.data.management.system.gen.service.dto.DeviceInfoQu
 import com.tplink.smb.common.data.management.system.gen.service.mapstruct.DeviceInfoMapper;
 import com.tplink.smb.common.data.management.system.service.S3StorageService;
 import com.tplink.smb.common.data.management.system.utils.*;
-import com.tplink.smb.common.data.management.system.gen.domain.*;
-import com.tplink.smb.common.data.management.system.utils.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import org.springframework.web.client.RestTemplate;
-// 在 ApplicationFormServiceImpl.java 中添加
+import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+// 在 ApplicationFormServiceImpl.java 中添加
 
 /**
  * @author Chen Jiayuan
@@ -198,7 +196,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
               .controllerVersion((String) dataMap.get("controllerVersion"))
               .minControllerVersion((String) dataMap.get("minControllerVersion"))
               .notSupportControllerVersion(
-                  parseVersionsToList((String) dataMap.get("notSupportControllerVersion")))
+                  parseVersionsToList(dataMap.get("notSupportControllerVersion")))
               .type((String) dataMap.get("type"))
               .modelType((String) dataMap.get("modelType"))
               .ippt(Boolean.parseBoolean((String) dataMap.get("ippt")))
@@ -238,7 +236,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
               .controllerVersion((String) dataMap.get("controllerVersion"))
               .minControllerVersion((String) dataMap.get("minControllerVersion"))
               .notSupportControllerVersion(
-                  parseVersionsToList((String) dataMap.get("notSupportControllerVersion")))
+                  parseVersionsToList(dataMap.get("notSupportControllerVersion")))
               .imageName((String) dataMap.get("imageName"))
               .imgBucketPathMap(imgBucketPathMap)
               .build();
@@ -299,7 +297,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
           }
           if (dataMap.containsKey("notSupportControllerVersion")) {
             existingTemplate.setNotSupportControllerVersion(
-                parseVersionsToList((String) dataMap.get("notSupportControllerVersion")));
+                parseVersionsToList(dataMap.get("notSupportControllerVersion")));
           }
           if (dataMap.containsKey("type")) {
             existingTemplate.setType((String) dataMap.get("type"));
@@ -342,7 +340,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
           }
           if (dataMap.containsKey("notSupportControllerVersion")) {
             existingImageInfo.setNotSupportControllerVersion(
-                parseVersionsToList((String) dataMap.get("notSupportControllerVersion")));
+                parseVersionsToList(dataMap.get("notSupportControllerVersion")));
           }
           if (dataMap.containsKey("imageName")) {
             existingImageInfo.setImageName((String) dataMap.get("imageName"));

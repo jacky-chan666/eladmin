@@ -4,7 +4,6 @@
 package com.tplink.smb.common.data.management.system.gen.domain;
 
 import java.util.List;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

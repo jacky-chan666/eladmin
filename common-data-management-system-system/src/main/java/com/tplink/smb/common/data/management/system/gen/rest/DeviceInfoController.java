@@ -6,16 +6,16 @@ package com.tplink.smb.common.data.management.system.gen.rest;
 import com.tplink.smb.common.data.management.system.gen.service.DeviceInfoService;
 import com.tplink.smb.common.data.management.system.gen.service.dto.DeviceInfoDto;
 import com.tplink.smb.common.data.management.system.gen.service.dto.DeviceInfoQueryCriteria;
-import org.springframework.data.domain.Pageable;
+import com.tplink.smb.common.data.management.system.utils.PageResult;
+import io.swagger.annotations.*;
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.*;
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
-import com.tplink.smb.common.data.management.system.utils.PageResult;
 
 /**
  * @author Chen Jiayuan

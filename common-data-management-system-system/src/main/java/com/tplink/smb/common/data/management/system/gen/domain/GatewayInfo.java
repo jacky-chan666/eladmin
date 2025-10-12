@@ -6,12 +6,11 @@ package com.tplink.smb.common.data.management.system.gen.domain;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
 /**
  * @author Chen Jiayuan

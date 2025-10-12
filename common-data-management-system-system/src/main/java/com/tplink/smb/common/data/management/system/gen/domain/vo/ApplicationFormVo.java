@@ -7,9 +7,11 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
+ * Description of this file
+ *
  * @author Chen Jiayuan
  * @version 1.0
- * @since 2025/9/30
+ * @since 2025/9/19
  */
 @Data
 public class ApplicationFormVo {
@@ -35,17 +37,42 @@ public class ApplicationFormVo {
   @ApiModelProperty(value = "设备信息数据的id")
   private Integer applicationDataId;
 
-  @ApiModelProperty("研发接口人用户名")
-  private String devContact;
+  // 删除原有的审批人字段，新增6个审批人字段
+  @ApiModelProperty("审批人1")
+  private String approver1;
 
-  @ApiModelProperty("测试接口人用户名")
-  private String testContact;
+  @ApiModelProperty("审批人1层级")
+  private Integer approver1Level;
 
-  @ApiModelProperty("研发组长用户名")
-  private String devLeader;
+  @ApiModelProperty("审批人2")
+  private String approver2;
 
-  @ApiModelProperty("测试组长用户名")
-  private String testLeader;
+  @ApiModelProperty("审批人2层级")
+  private Integer approver2Level;
+
+  @ApiModelProperty("审批人3")
+  private String approver3;
+
+  @ApiModelProperty("审批人3层级")
+  private Integer approver3Level;
+
+  @ApiModelProperty("审批人4")
+  private String approver4;
+
+  @ApiModelProperty("审批人4层级")
+  private Integer approver4Level;
+
+  @ApiModelProperty("审批人5")
+  private String approver5;
+
+  @ApiModelProperty("审批人5层级")
+  private Integer approver5Level;
+
+  @ApiModelProperty("审批人6")
+  private String approver6;
+
+  @ApiModelProperty("审批人6层级")
+  private Integer approver6Level;
 
   @ApiModelProperty("申请人用户名（当前登录用户）")
   private String applicantUserName;

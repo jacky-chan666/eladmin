@@ -4,17 +4,16 @@
 package com.tplink.smb.common.data.management.system.gen.service.mapstruct;
 
 import cn.hutool.json.JSONUtil;
-import com.tplink.smb.common.data.management.system.gen.service.dto.DeviceInfoDto;
 import com.tplink.smb.common.data.management.system.base.BaseMapper;
 import com.tplink.smb.common.data.management.system.gen.domain.DeviceInfo;
 import com.tplink.smb.common.data.management.system.gen.domain.DeviceModelTemplatePO;
 import com.tplink.smb.common.data.management.system.gen.domain.ImageInfoPO;
+import com.tplink.smb.common.data.management.system.gen.service.dto.DeviceInfoDto;
+import java.util.List;
+import java.util.Map;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Chen Jiayuan

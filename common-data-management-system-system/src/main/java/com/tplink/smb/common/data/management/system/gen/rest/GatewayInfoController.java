@@ -4,9 +4,9 @@
 package com.tplink.smb.common.data.management.system.gen.rest;
 
 import com.tplink.smb.common.data.management.system.gen.service.GatewayInfoService;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.*;
 
 /**
  * @author Chen Jiayuan

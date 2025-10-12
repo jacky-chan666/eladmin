@@ -3,18 +3,17 @@
  */
 package com.tplink.smb.common.data.management.system.gen.service;
 
-import com.tplink.smb.common.data.management.system.gen.service.dto.ApplicationFormQueryCriteria;
-import com.tplink.smb.common.data.management.system.gen.service.dto.ApprovalRecordDto;
-import com.tplink.smb.common.data.management.system.gen.service.dto.PendingApprovalDto;
 import com.tplink.smb.common.data.management.system.gen.domain.ApplicationForm;
 import com.tplink.smb.common.data.management.system.gen.domain.vo.ApplicationFormVo;
 import com.tplink.smb.common.data.management.system.gen.service.dto.ApplicationFormDto;
-import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
+import com.tplink.smb.common.data.management.system.gen.service.dto.ApplicationFormQueryCriteria;
+import com.tplink.smb.common.data.management.system.gen.service.dto.ApprovalRecordDto;
+import com.tplink.smb.common.data.management.system.gen.service.dto.PendingApprovalDto;
 import com.tplink.smb.common.data.management.system.utils.PageResult;
+import java.io.IOException;
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author Chen Jiayuan
@@ -93,6 +92,15 @@ public interface ApplicationFormService {
    */
   List<PendingApprovalDto> getPendingApprovals(String approverUserName);
 
+  /**
+   * 查询当前用户的待审批任务
+   *
+   * @param
+   * @return 待审批任务列表
+   */
+  PageResult<PendingApprovalDto> getPendingApprovals(
+      ApplicationFormQueryCriteria criteria, Pageable pageable);
+
   // 修改 ApplicationFormService.java 中的方法签名
   PageResult<ApplicationFormDto> getApprovedApplications(
       ApplicationFormQueryCriteria criteria, Pageable pageable);
@@ -144,9 +152,6 @@ public interface ApplicationFormService {
    */
   void manualTriggerSync(Integer applicationFormId);
 
-  PageResult<PendingApprovalDto> getPendingApprovals(
-      ApplicationFormQueryCriteria criteria, Pageable pageable);
-
   /**
    * 撤回申请单
    *
@@ -155,9 +160,8 @@ public interface ApplicationFormService {
    */
   void withdrawApplication(Integer applicationFormId, String applicantName);
 
-  // 在 ApplicationFormService.java 中添加以下方法
   /**
-   * 删除申请单（仅草稿状态可删除）
+   * 删除申请单
    *
    * @param applicationFormId 申请单ID
    * @param applicantName 申请人姓名

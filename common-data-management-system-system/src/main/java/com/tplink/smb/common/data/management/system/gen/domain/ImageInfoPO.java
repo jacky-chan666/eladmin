@@ -3,13 +3,12 @@
  */
 package com.tplink.smb.common.data.management.system.gen.domain;
 
-import lombok.*;
 import com.tplink.smb.common.data.management.system.gen.utils.StringListConverter;
 import com.tplink.smb.common.data.management.system.gen.utils.StringMapConverter;
-
-import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.*;
+import lombok.*;
 
 @Builder
 @Getter

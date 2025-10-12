@@ -3,12 +3,11 @@
  */
 package com.tplink.smb.common.data.management.system.gen.service;
 
+import com.tplink.smb.common.data.management.system.gen.domain.GatewayInfo;
 import com.tplink.smb.common.data.management.system.gen.service.dto.GatewayInfoDto;
 import com.tplink.smb.common.data.management.system.gen.service.dto.GatewayInfoQueryCriteria;
-import com.tplink.smb.common.data.management.system.gen.domain.GatewayInfo;
-
-import java.util.List;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 /**

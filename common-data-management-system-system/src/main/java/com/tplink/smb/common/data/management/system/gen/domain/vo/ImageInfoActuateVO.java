@@ -3,9 +3,8 @@
  */
 package com.tplink.smb.common.data.management.system.gen.domain.vo;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

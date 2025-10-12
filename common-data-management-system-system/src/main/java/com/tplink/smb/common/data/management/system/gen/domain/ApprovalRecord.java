@@ -3,10 +3,10 @@
  */
 package com.tplink.smb.common.data.management.system.gen.domain;
 
-import lombok.Data;
-import javax.persistence.*;
-import java.sql.Timestamp;
 import java.io.Serializable;
+import java.sql.Timestamp;
+import javax.persistence.*;
+import lombok.Data;
 
 @Entity
 @Data

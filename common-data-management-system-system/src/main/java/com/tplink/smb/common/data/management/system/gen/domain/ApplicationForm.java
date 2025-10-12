@@ -1,22 +1,36 @@
-/*
- * Copyright (c) 2025, TP-Link. All rights reserved.
- */
-package com.tplink.smb.common.data.management.system.gen.domain;
+package com.tplink.smb.common.data.management.system.gen.domain; // ApplicationForm.java
 
-import lombok.Data;
+/*
+ *  Copyright 2019-2025 Zheng Jie
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 import cn.hutool.core.bean.BeanUtil;
-import io.swagger.annotations.ApiModelProperty;
 import cn.hutool.core.bean.copier.CopyOptions;
-import javax.persistence.*;
+import io.swagger.annotations.ApiModelProperty;
+import java.io.Serializable;
 import java.sql.Timestamp;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import lombok.Data;
 
 /**
+ * @website https://eladmin.vip
+ * @description /
  * @author Chen Jiayuan
- * @version 1.0
- * @since 2025/9/30
+ * @date 2025-09-18
  */
 @Entity
 @Data
@@ -34,8 +48,7 @@ public class ApplicationForm implements Serializable {
   public static final Integer STATUS_GRAY_SYNCING = 6; // 同步中（原4改为5）
   public static final Integer STATUS_GRAY_SYNC_FAILED = 7; // 同步失败（原5改为6）
   public static final Integer STATUS_SYNCING = 8; // 同步中（原4改为5）
-  public static final Integer STATUS_SYNC_FAILED =
-      9; // 同步失败（原5改为6）    public static final Integer STATUS_COMPLETED = 7;     // 已完成（原6改为7）
+  public static final Integer STATUS_SYNC_FAILED = 9; // 同步失败（原5改为6）
   public static final Integer STATUS_REJECTED = 10; // 已驳回（原7改为8）
   public static final Integer STATUS_AUTO_PROCESSING = 11; // 自动处理中（原8改为9）
   public static final Integer STATUS_AUTO_FAILED = 12; // 自动处理失败（原9改为10）
@@ -54,11 +67,11 @@ public class ApplicationForm implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "`id`")
+  @Column(name = "id")
   @ApiModelProperty(value = "id")
   private Integer id;
 
-  @Column(name = "`uuid`", unique = true, nullable = false)
+  @Column(name = "uuid", unique = true, nullable = false)
   @ApiModelProperty(value = "申请单UUID")
   private String uuid;
 
@@ -67,7 +80,7 @@ public class ApplicationForm implements Serializable {
   @ApiModelProperty(value = "申请人用户名")
   private String applicantUserName;
 
-  @Column(name = "`department`")
+  @Column(name = "department")
   @ApiModelProperty(value = "所属部门")
   private String department;
 
@@ -95,66 +108,67 @@ public class ApplicationForm implements Serializable {
   @ApiModelProperty(value = "申请理由")
   private String applicationReason;
 
-  @Column(name = "`status`", nullable = false)
+  @Column(name = "round")
+  @ApiModelProperty(value = "审批轮次")
+  private Integer round = 0;
+
+  @Column(name = "status", nullable = false)
   @NotNull
   @ApiModelProperty(value = "申请状态")
   private Integer status;
 
-  @Column(name = "`test_contact`")
-  @ApiModelProperty(value = "测试接口人")
-  private String testContact;
+  // 删除原有的审批人字段，新增6个审批人字段
+  @Column(name = "`approver1`")
+  @ApiModelProperty(value = "审批人1")
+  private String approver1;
 
-  @Column(name = "`test_leader`")
-  @ApiModelProperty(value = "测试组长")
-  private String testLeader;
+  @Column(name = "`approver1_level`")
+  @ApiModelProperty(value = "审批人1层级")
+  private Integer approver1Level;
 
-  @Column(name = "`dev_contact`")
-  @ApiModelProperty(value = "研发接口人")
-  private String devContact;
+  @Column(name = "`approver2`")
+  @ApiModelProperty(value = "审批人2")
+  private String approver2;
 
-  @Column(name = "`dev_leader`")
-  @ApiModelProperty(value = "研发组长")
-  private String devLeader;
+  @Column(name = "`approver2_level`")
+  @ApiModelProperty(value = "审批人2层级")
+  private Integer approver2Level;
 
-  @Column(name = "`test_contact_approval`")
-  @ApiModelProperty(value = "测试接口人审批状态")
-  private Integer testContactApproval;
+  @Column(name = "`approver3`")
+  @ApiModelProperty(value = "审批人3")
+  private String approver3;
 
-  @Column(name = "`test_leader_approval`")
-  @ApiModelProperty(value = "测试组长审批状态")
-  private Integer testLeaderApproval;
+  @Column(name = "`approver3_level`")
+  @ApiModelProperty(value = "审批人3层级")
+  private Integer approver3Level;
 
-  @Column(name = "`dev_contact_approval`")
-  @ApiModelProperty(value = "研发接口人审批状态")
-  private Integer devContactApproval;
+  @Column(name = "`approver4`")
+  @ApiModelProperty(value = "审批人4")
+  private String approver4;
 
-  @Column(name = "`dev_leader_approval`")
-  @ApiModelProperty(value = "研发组长审批状态")
-  private Integer devLeaderApproval;
+  @Column(name = "`approver4_level`")
+  @ApiModelProperty(value = "审批人4层级")
+  private Integer approver4Level;
 
-  @Column(name = "`test_contact_comment`")
-  @ApiModelProperty(value = "测试接口人审批意见")
-  private String testContactComment;
+  @Column(name = "`approver5`")
+  @ApiModelProperty(value = "审批人5")
+  private String approver5;
 
-  @Column(name = "`test_leader_comment`")
-  @ApiModelProperty(value = "测试组长审批意见")
-  private String testLeaderComment;
+  @Column(name = "`approver5_level`")
+  @ApiModelProperty(value = "审批人5层级")
+  private Integer approver5Level;
 
-  @Column(name = "`dev_contact_comment`")
-  @ApiModelProperty(value = "研发接口人审批意见")
-  private String devContactComment;
+  @Column(name = "`approver6`")
+  @ApiModelProperty(value = "审批人6")
+  private String approver6;
 
-  @Column(name = "`dev_leader_comment`")
-  @ApiModelProperty(value = "研发组长意见审批")
-  private String devLeaderComment;
+  @Column(name = "`approver6_level`")
+  @ApiModelProperty(value = "审批人6层级")
+  private Integer approver6Level;
 
-  @Column(name = "`current_approvers`")
-  @ApiModelProperty(value = "当前审核人列表（JSON格式存储）")
-  private String currentApprovers;
-
-  @Column(name = "`approval_history`")
-  @ApiModelProperty(value = "审核历史表（JSON格式存储，记录每次提交的审批人，审批状态和审批意见）")
-  private String approvalHistory;
+  @Column(name = "`approval_records`", columnDefinition = "JSON")
+  @ApiModelProperty(value = "审批记录（JSON格式存储）")
+  private String approvalRecords;
 
   @Column(name = "`data_details`")
   @ApiModelProperty(value = "设备信息详情（JSON格式存储）")

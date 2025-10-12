@@ -3,15 +3,14 @@
  */
 package com.tplink.smb.common.data.management.system.gen.service;
 
+import com.tplink.smb.common.data.management.system.gen.domain.DeviceInfo;
 import com.tplink.smb.common.data.management.system.gen.service.dto.DeviceInfoDto;
 import com.tplink.smb.common.data.management.system.gen.service.dto.DeviceInfoQueryCriteria;
-import com.tplink.smb.common.data.management.system.gen.domain.DeviceInfo;
-import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
 import com.tplink.smb.common.data.management.system.utils.PageResult;
+import java.io.IOException;
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author Chen Jiayuan

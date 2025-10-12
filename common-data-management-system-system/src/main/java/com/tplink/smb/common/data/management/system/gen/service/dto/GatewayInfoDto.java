@@ -3,10 +3,10 @@
  */
 package com.tplink.smb.common.data.management.system.gen.service.dto;
 
-import lombok.Data;
-import java.sql.Timestamp;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModelProperty;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import lombok.Data;
 
 /**
  * @author Chen Jiayuan

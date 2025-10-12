@@ -3,9 +3,9 @@
  */
 package com.tplink.smb.common.data.management.system.gen.service.dto;
 
-import lombok.Data;
 import com.tplink.smb.common.data.management.system.annotation.Query;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * @author Chen Jiayuan

@@ -2,15 +2,16 @@
  * Copyright (c) 2025, TP-Link. All rights reserved.
  */
 package com.tplink.smb.common.data.management.system.gen.utils; // 文件路径:
-                                                                // src/main/java/me/zhengjie/gen/converter/StringListConverter.java
+
+// src/main/java/me/zhengjie/gen/converter/StringListConverter.java
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
 /**
  * @author Chen Jiayuan

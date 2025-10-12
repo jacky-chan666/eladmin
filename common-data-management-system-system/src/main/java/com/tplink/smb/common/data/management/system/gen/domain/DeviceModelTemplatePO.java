@@ -3,17 +3,16 @@
  */
 package com.tplink.smb.common.data.management.system.gen.domain;
 
+import com.tplink.smb.common.data.management.system.gen.utils.GenericJsonConverter;
+import com.tplink.smb.common.data.management.system.gen.utils.StringListConverter;
+import java.util.List;
+import java.util.Map;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.tplink.smb.common.data.management.system.gen.utils.GenericJsonConverter;
-import com.tplink.smb.common.data.management.system.gen.utils.StringListConverter;
-
-import javax.persistence.*;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Chen Jiayuan
